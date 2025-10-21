@@ -19,6 +19,7 @@ class GameScene extends Phaser.Scene {
     this.batteries = 0;
     this.gameSpeed = INITIAL_SPEED;
     this.gameOver = false;
+    this.gamePaused = true; // El juego inicia pausado
     this.lastDifficultyIncrease = 0;
 
     // Capas del fondo en estilo plano retro
@@ -59,19 +60,25 @@ class GameScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
 
-    // Eventos para saltar (más fiables)
+    // Eventos para saltar (más fiables) - solo funcionan si no está pausado
     this.input.keyboard.on("keydown-SPACE", () => {
-      this.player.attemptJump();
-      this.handlePlayerInput();
+      if (!this.gamePaused) {
+        this.player.attemptJump();
+        this.handlePlayerInput();
+      }
     });
     this.input.keyboard.on("keydown-UP", () => {
-      this.player.attemptJump();
-      this.handlePlayerInput();
+      if (!this.gamePaused) {
+        this.player.attemptJump();
+        this.handlePlayerInput();
+      }
     });
     // Soporte táctil / click
     this.input.on("pointerdown", () => {
-      this.player.attemptJump();
-      this.handlePlayerInput();
+      if (!this.gamePaused) {
+        this.player.attemptJump();
+        this.handlePlayerInput();
+      }
     });
 
     // Altura de salto variable (si suelta pronto, corta el salto)
@@ -93,7 +100,7 @@ class GameScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    if (this.gameOver) {
+    if (this.gameOver || this.gamePaused) {
       return;
     }
 
@@ -110,6 +117,7 @@ class GameScene extends Phaser.Scene {
 
   resetState() {
     this.gameOver = false;
+    this.gamePaused = true; // Vuelve a pausar al resetear
     this.score = 0;
     this.batteries = 0;
     this.gameSpeed = INITIAL_SPEED;
@@ -498,5 +506,9 @@ class GameScene extends Phaser.Scene {
     if (this.hudMessageElement) {
       this.hudMessageElement.classList.add("hud-message--hidden");
     }
+  }
+
+  startGameplay() {
+    this.gamePaused = false;
   }
 }

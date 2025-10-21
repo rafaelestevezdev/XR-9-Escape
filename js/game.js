@@ -22,6 +22,23 @@ const config = {
 
 const game = new Phaser.Game(config);
 
+// Variable para controlar si el juego ha iniciado
+let gameStarted = false;
+
+// Iniciar el juego desde el botón HTML
+function startGame() {
+  const startScreen = document.getElementById("start-screen");
+  if (startScreen) {
+    startScreen.classList.add("hidden");
+  }
+
+  const scene = game.scene.getScene("GameScene");
+  if (scene && !gameStarted) {
+    gameStarted = true;
+    scene.startGameplay();
+  }
+}
+
 // Manejar reinicio desde el botón HTML
 function restartGame() {
   const scene = game.scene.getScene("GameScene");

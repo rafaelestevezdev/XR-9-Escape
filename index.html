@@ -28,6 +28,21 @@
           <span id="battery-count">0</span>
         </div>
         <div id="hud-message" class="hud-message">PRESS SPACE OR TAP</div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="start-panel">
+          <div class="start-title">XR-9</div>
+          <div class="start-subtitle">ESCAPE</div>
+          <div class="start-tagline">// FACTORY RUNNER //</div>
+          <button class="start-btn" onclick="startGame()">START GAME</button>
+          <div class="start-instructions">
+            <p>JUMP: SPACE / UP / TAP</p>
+            <p>COLLECT ⚡ AVOID OBSTACLES</p>
+          </div>
+          <p class="developer">Desarrollado por: <span class="developer-name">@rafaelestevezdev</span></p>
+        </div>
+
+        <!-- Game Over Screen -->
         <div id="game-over-screen" class="game-over-panel">
           <div class="game-over-text">GAME OVER</div>
           <div class="game-over-score">
@@ -39,7 +54,6 @@
           <button class="restart-btn" onclick="restartGame()">RESTART</button>
         </div>
       </div>
-
     </div>
 
     <!-- Scripts modulares -->
