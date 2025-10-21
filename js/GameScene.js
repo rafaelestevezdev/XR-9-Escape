@@ -484,7 +484,7 @@ class GameScene extends Phaser.Scene {
 
   updateSpeedHUD() {
     if (this.speedIndicatorElement) {
-      this.speedIndicatorElement.textContent = `SPD ${Math.round(
+      this.speedIndicatorElement.textContent = `VEL ${Math.round(
         this.gameSpeed
       )}`;
     }
@@ -492,7 +492,7 @@ class GameScene extends Phaser.Scene {
       const level = this.obstacleManager
         ? this.obstacleManager.getDifficultyLevel()
         : 1;
-      this.stageIndicatorElement.textContent = `STG ${level
+      this.stageIndicatorElement.textContent = `NIV ${level
         .toString()
         .padStart(2, "0")}`;
     }

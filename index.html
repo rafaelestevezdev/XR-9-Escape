@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +17,7 @@
     <div class="cabinet">
       <header class="cabinet-header">
         <span class="cabinet-title">XR-9 ESCAPE</span>
-        <span id="speed-indicator" class="cabinet-stat">SPD 350</span>
+        <span id="speed-indicator" class="cabinet-stat">VEL 350</span>
       </header>
 
       <div class="cabinet-screen">
@@ -27,36 +27,37 @@
           <span class="battery-icon">⚡</span>
           <span id="battery-count">0</span>
         </div>
-        <div id="hud-message" class="hud-message">PRESS SPACE OR TAP</div>
+        <div id="hud-message" class="hud-message">PRESIONA ESPACIO O TOCA</div>
 
         <!-- Start Screen -->
         <div id="start-screen" class="start-panel">
           <div class="start-title">XR-9</div>
           <div class="start-subtitle">ESCAPE</div>
-          <div class="start-tagline">// FACTORY RUNNER //</div>
-          <button class="start-btn" onclick="startGame()">START GAME</button>
+          <div class="start-tagline">// CORREDOR DE FABRICA //</div>
+          <button class="start-btn" onclick="startGame()">INICIAR JUEGO</button>
           <div class="start-instructions">
-            <p>JUMP: SPACE / UP / TAP</p>
-            <p>COLLECT ⚡ AVOID OBSTACLES</p>
+            <p>SALTAR: ESPACIO / ARRIBA / TOCAR</p>
+            <p>RECOLECTA ⚡ EVITA OBSTACULOS</p>
           </div>
           <p class="developer">Desarrollado por: <span class="developer-name">@rafaelestevezdev</span></p>
         </div>
 
         <!-- Game Over Screen -->
         <div id="game-over-screen" class="game-over-panel">
-          <div class="game-over-text">GAME OVER</div>
+          <div class="game-over-text">FIN DEL JUEGO</div>
           <div class="game-over-score">
-            FINAL SCORE <span id="final-score">0</span>
+            PUNTUACION FINAL <span id="final-score">0</span>
           </div>
           <div class="game-over-batteries">
-            BATTERIES <span id="final-batteries">0</span>
+            BATERIAS <span id="final-batteries">0</span>
           </div>
-          <button class="restart-btn" onclick="restartGame()">RESTART</button>
+          <button class="restart-btn" onclick="restartGame()">REINICIAR</button>
         </div>
-      </div>
+      <footer class="cabinet-footer">
+        <span class="footer-text">INSERTA MONEDA // VERSION 0.3</span>
+        <span id="stage-indicator" class="cabinet-stage">NIV 01</span>
+      </footer>
     </div>
-
-    <!-- Scripts modulares -->
     <script src="js/Player.js"></script>
     <script src="js/Obstacle.js"></script>
     <script src="js/ObstacleManager.js"></script>
