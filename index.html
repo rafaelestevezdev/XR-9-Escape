@@ -3,21 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prototipo XR-9 Runner</title>
+    <title>XR-9: Escape - Robot Runner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
   </head>
   <body>
-    <h1 class="title-game">XR-9:Escape</h1>
+    <div class="cabinet">
+      <header class="cabinet-header">
+        <span class="cabinet-title">XR-9 ESCAPE</span>
+        <span id="speed-indicator" class="cabinet-stat">SPD 350</span>
+      </header>
 
-    <canvas id="gameCanvas" width="1000" height="400"></canvas>
-
-    <div id="gameModal">
-      <div class="modal-content">
-        <h2>¡Perdiste!</h2>
-        <button id="restartBtn">Reiniciar</button>
+      <div class="cabinet-screen">
+        <div id="game-container"></div>
+        <div id="score" class="score-display">00000 M</div>
+        <div id="battery-counter" class="battery-display">
+          <span class="battery-icon">⚡</span>
+          <span id="battery-count">0</span>
+        </div>
+        <div id="hud-message" class="hud-message">PRESS SPACE OR TAP</div>
+        <div id="game-over-screen" class="game-over-panel">
+          <div class="game-over-text">GAME OVER</div>
+          <div class="game-over-score">
+            FINAL SCORE <span id="final-score">0</span>
+          </div>
+          <div class="game-over-batteries">
+            BATTERIES <span id="final-batteries">0</span>
+          </div>
+          <button class="restart-btn" onclick="restartGame()">RESTART</button>
+        </div>
       </div>
+
+      <footer class="cabinet-footer">
+        <span class="footer-text">INSERT COIN // BUILD 0.2</span>
+        <span id="stage-indicator" class="cabinet-stage">STG 01</span>
+      </footer>
     </div>
 
-    <script type="module" src="js/main.js"></script>
+    <!-- Scripts modulares -->
+    <script src="js/Player.js"></script>
+    <script src="js/Obstacle.js"></script>
+    <script src="js/ObstacleManager.js"></script>
+    <script src="js/GameScene.js"></script>
+    <script src="js/game.js"></script>
   </body>
 </html>
