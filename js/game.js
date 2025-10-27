@@ -10,6 +10,10 @@ const config = {
   parent: "game-container",
   pixelArt: true,
   transparent: false,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
   physics: {
     default: "arcade",
     arcade: {
@@ -44,5 +48,22 @@ function restartGame() {
   const scene = game.scene.getScene("GameScene");
   if (scene) {
     scene.restartGame();
+  }
+}
+
+// Volver al menú principal
+function returnToMenu() {
+  const gameOverScreen = document.getElementById("game-over-screen");
+  if (gameOverScreen) {
+    gameOverScreen.classList.remove("show");
+  }
+  const startScreen = document.getElementById("start-screen");
+  if (startScreen) {
+    startScreen.classList.remove("hidden");
+  }
+  gameStarted = false;
+  const scene = game.scene.getScene("GameScene");
+  if (scene) {
+    scene.returnToMenu();
   }
 }

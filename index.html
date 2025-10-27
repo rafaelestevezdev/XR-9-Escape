@@ -4,13 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>XR-9: Escape - Robot Runner</title>
+    <link rel="icon" href="./assets/icon/robot-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/hud.css" />
+    <link rel="stylesheet" href="css/screens.css" />
+    <link rel="stylesheet" href="css/buttons.css" />
+    <link rel="stylesheet" href="css/modals.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
   </head>
   <body>
@@ -27,22 +33,19 @@
           <span class="battery-icon">⚡</span>
           <span id="battery-count">0</span>
         </div>
-        <div id="hud-message" class="hud-message">PRESIONA ESPACIO O TOCA</div>
 
-        <!-- Start Screen -->
+        <!-- Include: html/start-screen.html -->
         <div id="start-screen" class="start-panel">
+          <button class="help-btn" onclick="showControls()">?</button>
           <div class="start-title">XR-9</div>
           <div class="start-subtitle">ESCAPE</div>
           <div class="start-tagline">// CORREDOR DE FABRICA //</div>
           <button class="start-btn" onclick="startGame()">INICIAR JUEGO</button>
-          <div class="start-instructions">
-            <p>SALTAR: ESPACIO / ARRIBA / TOCAR</p>
-            <p>RECOLECTA ⚡ EVITA OBSTACULOS</p>
-          </div>
+          <button class="config-btn" onclick="showConfig()">CONFIGURACIÓN</button>
           <p class="developer">Desarrollado por: <span class="developer-name">@rafaelestevezdev</span></p>
         </div>
 
-        <!-- Game Over Screen -->
+        <!-- Include: html/game-over-screen.html -->
         <div id="game-over-screen" class="game-over-panel">
           <div class="game-over-text">FIN DEL JUEGO</div>
           <div class="game-over-score">
@@ -51,13 +54,42 @@
           <div class="game-over-batteries">
             BATERIAS <span id="final-batteries">0</span>
           </div>
-          <button class="restart-btn" onclick="restartGame()">REINICIAR</button>
+          <div class="game-over-buttons">
+            <button class="restart-btn" onclick="restartGame()">REINICIAR</button>
+            <button class="menu-btn" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
+          </div>
         </div>
-      <footer class="cabinet-footer">
-        <span class="footer-text">INSERTA MONEDA // VERSION 0.3</span>
-        <span id="stage-indicator" class="cabinet-stage">NIV 01</span>
-      </footer>
+
+        <!-- Include: html/config-modal.html -->
+        <div id="config-modal" class="modal">
+          <div class="modal-content">
+            <h2>CONFIGURACIÓN</h2>
+            <p>SE AGREGARÁN PRONTO</p>
+            <button class="modal-close-btn" onclick="closeModal()">CERRAR</button>
+          </div>
+        </div>
+
+        <!-- Include: html/controls-modal.html -->
+        <div id="controls-modal" class="modal">
+          <div class="modal-content">
+            <h2>¿CÓMO JUGAR?</h2>
+            <p>SALTAR: ESPACIO / ARRIBA / TOCAR</p>
+            <p>RECOLECTA ⚡ Y EVITA OBSTACULOS</p>
+            <button class="modal-close-btn" onclick="closeModal()">CERRAR</button>
+          </div>
+        </div>
     </div>
+    <script>
+      function showConfig() {
+        document.getElementById('config-modal').classList.add('show');
+      }
+      function showControls() {
+        document.getElementById('controls-modal').classList.add('show');
+      }
+      function closeModal() {
+        document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('show'));
+      }
+    </script>
     <script src="js/Player.js"></script>
     <script src="js/Obstacle.js"></script>
     <script src="js/ObstacleManager.js"></script>

@@ -1,0 +1,135 @@
+.help-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: "Press Start 2P", monospace;
+  border: 2px solid var(--panel-edge);
+  background: var(--panel);
+  color: var(--panel-edge);
+  cursor: pointer;
+  letter-spacing: 0.2em;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.help-btn:hover {
+  background: var(--panel-edge);
+  color: var(--ink);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3), 0 0 10px rgba(100, 255, 218, 0.3);
+}
+
+.help-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.config-btn {
+  padding: 12px 24px;
+  font-size: 10px;
+  font-family: "Press Start 2P", monospace;
+  border: 2px solid var(--panel-edge);
+  background: var(--panel);
+  color: var(--panel-edge);
+  cursor: pointer;
+  letter-spacing: 0.2em;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.config-btn:hover {
+  background: var(--panel-edge);
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3), 0 0 15px rgba(100, 255, 218, 0.4);
+}
+
+.config-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.game-over-panel {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 6, 15, 0.94);
+  border: 3px solid var(--accent);
+  color: var(--text);
+  padding: 40px 20px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 18px;
+  text-align: center;
+}
+
+.game-over-panel.show {
+  display: flex;
+}
+
+.game-over-text {
+  font-size: 26px;
+}
+
+.game-over-score {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.game-over-batteries {
+  font-size: 14px;
+  color: #ffd700;
+  margin-top: -8px;
+}
+
+.game-over-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.restart-btn {
+  padding: 12px 22px;
+  font-size: 12px;
+  font-family: "Press Start 2P", monospace;
+  border: 2px solid var(--text);
+  background: var(--panel);
+  color: var(--panel-edge);
+  cursor: pointer;
+  letter-spacing: 0.18em;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.restart-btn:hover {
+  background: var(--panel-edge);
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3), 0 0 15px rgba(100, 255, 218, 0.4);
+}
+
+.restart-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.menu-btn {
+  padding: 12px 22px;
+  font-size: 12px;
+  font-family: "Press Start 2P", monospace;
+  border: 2px solid var(--text);
+  background: var(--accent);
+  color: var(--text);
+  cursor: pointer;
+  letter-spacing: 0.18em;
+  transition: transform 0.1s ease;
+}
+
+.menu-btn:active {
+  transform: translateY(2px);
+}

@@ -38,7 +38,6 @@ class GameScene extends Phaser.Scene {
     this.batteryCountElement = null;
     this.speedIndicatorElement = null;
     this.stageIndicatorElement = null;
-    this.hudMessageElement = null;
     this.hasPlayerInteracted = false;
   }
 
@@ -125,9 +124,6 @@ class GameScene extends Phaser.Scene {
     this.updateScoreText(0);
     this.updateBatteryCount(0);
     this.hasPlayerInteracted = false;
-    if (this.hudMessageElement) {
-      this.hudMessageElement.classList.remove("hud-message--hidden");
-    }
     this.updateSpeedHUD();
     const gameOverScreen = document.getElementById("game-over-screen");
     if (gameOverScreen) {
@@ -468,18 +464,22 @@ class GameScene extends Phaser.Scene {
 
   restartGame() {
     this.resetState();
+    this.gamePaused = false;
     this.physics.resume();
     this.player.reset();
     this.obstacleManager.reset();
     this.gameSpeed = INITIAL_SPEED;
     this.updateSpeedHUD();
   }
+
+  returnToMenu() {
+    this.resetState();
+  }
   cacheHudElements() {
     this.scoreElement = document.getElementById("score");
     this.batteryCountElement = document.getElementById("battery-count");
     this.speedIndicatorElement = document.getElementById("speed-indicator");
     this.stageIndicatorElement = document.getElementById("stage-indicator");
-    this.hudMessageElement = document.getElementById("hud-message");
   }
 
   updateSpeedHUD() {
@@ -503,9 +503,7 @@ class GameScene extends Phaser.Scene {
       return;
     }
     this.hasPlayerInteracted = true;
-    if (this.hudMessageElement) {
-      this.hudMessageElement.classList.add("hud-message--hidden");
-    }
+    // El mensaje ahora se oculta automáticamente por tiempo, no por interacción
   }
 
   startGameplay() {
