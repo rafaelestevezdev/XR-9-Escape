@@ -42,7 +42,7 @@ class InputManager {
 
     // Configurar eventos de touch
     this.setupTouchEvents();
-    
+
     // Configurar eventos táctiles nativos adicionales para mejor rendimiento
     this.setupNativeTouchEvents();
   }
@@ -98,14 +98,14 @@ class InputManager {
   setupTouchEvents() {
     // Configurar para capturar eventos táctiles sin delay
     this.scene.input.setPollAlways();
-    
+
     // Un único listener optimizado para pointerdown
     this.scene.input.on("pointerdown", (pointer) => {
       // Prevenir comportamiento por defecto del navegador (puede ayudar con el delay)
       if (pointer.event) {
         pointer.event.preventDefault();
       }
-      
+
       // Llamar ambos callbacks (start y jump) desde el mismo evento
       if (this.onStartCallback) {
         this.onStartCallback();
@@ -233,11 +233,11 @@ class InputManager {
    */
   setupNativeTouchEvents() {
     const canvas = this.scene.game.canvas;
-    
+
     // Evento touchstart nativo (más rápido que pointerdown en móviles)
     this.nativeTouchHandler = (e) => {
       e.preventDefault(); // Prevenir delay de 300ms del navegador
-      
+
       // Llamar ambos callbacks
       if (this.onStartCallback) {
         this.onStartCallback();
@@ -246,9 +246,11 @@ class InputManager {
         this.onJumpCallback();
       }
     };
-    
-    canvas.addEventListener('touchstart', this.nativeTouchHandler, { passive: false });
-    
+
+    canvas.addEventListener("touchstart", this.nativeTouchHandler, {
+      passive: false,
+    });
+
     // Guardar referencia para limpieza posterior
     this.canvas = canvas;
   }
@@ -259,11 +261,11 @@ class InputManager {
   destroy() {
     // Limpiar evento táctil nativo
     if (this.canvas && this.nativeTouchHandler) {
-      this.canvas.removeEventListener('touchstart', this.nativeTouchHandler);
+      this.canvas.removeEventListener("touchstart", this.nativeTouchHandler);
       this.canvas = null;
       this.nativeTouchHandler = null;
     }
-    
+
     if (this.spaceKey) {
       this.spaceKey.destroy();
     }

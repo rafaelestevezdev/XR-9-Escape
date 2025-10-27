@@ -1,12 +1,12 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   body {
-    padding: 16px 8px;
+    padding: 8px;
   }
 
   .cabinet {
-    padding: 16px 12px;
-    gap: 12px;
+    padding: 12px;
+    gap: 8px;
   }
 
   .cabinet-header {
@@ -14,9 +14,21 @@
   }
 
   .cabinet-screen {
-    height: 50vh;
-    min-height: 400px;
+    height: 55vh;
+    min-height: 350px;
+    max-height: 450px;
     border-width: 2px;
+  }
+
+  #game-container {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #game-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
   }
 
   .start-panel {
@@ -82,19 +94,31 @@
 
 @media (max-width: 480px) {
   body {
-    padding: 8px 4px;
+    padding: 4px;
   }
 
   .cabinet {
-    padding: 12px 8px;
+    padding: 8px;
     border-width: 3px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
   }
 
   .cabinet-screen {
-    height: 60vh;
+    height: 65vh;
     min-height: 300px;
+    max-height: 500px;
     border-width: 2px;
+  }
+
+  #game-container {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  #game-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
   }
 
   .start-panel {

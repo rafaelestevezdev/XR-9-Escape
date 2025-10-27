@@ -10,7 +10,7 @@ const GAME_CONFIG = {
   PARENT: "game-container",
   PIXEL_ART: true,
   TRANSPARENT: false,
-  SCALE_MODE: Phaser.Scale.RESIZE,
+  SCALE_MODE: Phaser.Scale.FIT,
   AUTO_CENTER: Phaser.Scale.CENTER_BOTH,
 };
 
@@ -37,7 +37,7 @@ const GAME_INITIAL_STATE = {
 const GAME_POSITIONS = {
   GROUND_Y: 520,
   PLAYER_SPAWN_X: 120,
-  PLAYER_SPAWN_Y: 500,
+  PLAYER_SPAWN_Y: 480,
   OBSTACLE_SPAWN_X: 880,
 };
 
