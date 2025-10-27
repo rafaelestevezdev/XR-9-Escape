@@ -2,6 +2,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Mejorar respuesta táctil en móviles */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 :root {
@@ -86,6 +92,10 @@ body::before {
   background: #05070f;
   image-rendering: pixelated;
   overflow: hidden;
+  /* Optimizaciones para respuesta táctil rápida */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  cursor: pointer;
 }
 
 #game-container {

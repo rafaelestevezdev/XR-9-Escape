@@ -25,6 +25,22 @@ const config = {
       debug: CONSTANTS.PHYSICS_CONFIG.DEBUG,
     },
   },
+  input: {
+    // Optimizaciones para entrada táctil
+    activePointers: 3, // Soportar múltiples toques
+    smoothFactor: 0, // Sin suavizado para respuesta inmediata
+    windowEvents: true,
+  },
+  // Optimizaciones de rendimiento
+  fps: {
+    target: 60,
+    forceSetTimeOut: false,
+  },
+  render: {
+    pixelArt: true,
+    antialias: false,
+    roundPixels: true,
+  },
   scene: GameScene,
 };
 

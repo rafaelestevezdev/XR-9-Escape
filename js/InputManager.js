@@ -42,6 +42,9 @@ class InputManager {
 
     // Configurar eventos de touch
     this.setupTouchEvents();
+    
+    // Configurar eventos táctiles nativos adicionales para mejor rendimiento
+    this.setupNativeTouchEvents();
   }
 
   /**
@@ -93,19 +96,27 @@ class InputManager {
    * Configura los eventos de touch/puntero
    */
   setupTouchEvents() {
-    // Evento para saltar con touch/click
-    this.scene.input.on("pointerdown", () => {
+    // Configurar para capturar eventos táctiles sin delay
+    this.scene.input.setPollAlways();
+    
+    // Un único listener optimizado para pointerdown
+    this.scene.input.on("pointerdown", (pointer) => {
+      // Prevenir comportamiento por defecto del navegador (puede ayudar con el delay)
+      if (pointer.event) {
+        pointer.event.preventDefault();
+      }
+      
+      // Llamar ambos callbacks (start y jump) desde el mismo evento
+      if (this.onStartCallback) {
+        this.onStartCallback();
+      }
       if (this.onJumpCallback) {
         this.onJumpCallback();
       }
     });
 
-    // Evento para iniciar el juego con touch/click
-    this.scene.input.on("pointerdown", () => {
-      if (this.onStartCallback) {
-        this.onStartCallback();
-      }
-    });
+    // También escuchar el evento táctil nativo para respuesta más rápida
+    this.scene.input.addPointer(1); // Asegurar que hay al menos 1 puntero activo
   }
 
   /**
@@ -218,9 +229,41 @@ class InputManager {
   }
 
   /**
+   * Configura eventos táctiles nativos del navegador para mejor rendimiento
+   */
+  setupNativeTouchEvents() {
+    const canvas = this.scene.game.canvas;
+    
+    // Evento touchstart nativo (más rápido que pointerdown en móviles)
+    this.nativeTouchHandler = (e) => {
+      e.preventDefault(); // Prevenir delay de 300ms del navegador
+      
+      // Llamar ambos callbacks
+      if (this.onStartCallback) {
+        this.onStartCallback();
+      }
+      if (this.onJumpCallback) {
+        this.onJumpCallback();
+      }
+    };
+    
+    canvas.addEventListener('touchstart', this.nativeTouchHandler, { passive: false });
+    
+    // Guardar referencia para limpieza posterior
+    this.canvas = canvas;
+  }
+
+  /**
    * Destruye el manager y limpia eventos
    */
   destroy() {
+    // Limpiar evento táctil nativo
+    if (this.canvas && this.nativeTouchHandler) {
+      this.canvas.removeEventListener('touchstart', this.nativeTouchHandler);
+      this.canvas = null;
+      this.nativeTouchHandler = null;
+    }
+    
     if (this.spaceKey) {
       this.spaceKey.destroy();
     }
