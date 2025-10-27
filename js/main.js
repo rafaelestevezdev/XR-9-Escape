@@ -17,6 +17,8 @@ const config = {
   scale: {
     mode: CONSTANTS.GAME_CONFIG.SCALE_MODE,
     autoCenter: CONSTANTS.GAME_CONFIG.AUTO_CENTER,
+    width: CONSTANTS.GAME_CONFIG.WIDTH,
+    height: CONSTANTS.GAME_CONFIG.HEIGHT,
   },
   physics: {
     default: CONSTANTS.PHYSICS_CONFIG.DEFAULT,

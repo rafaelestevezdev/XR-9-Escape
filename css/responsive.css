@@ -2,33 +2,30 @@
 @media (max-width: 768px) {
   body {
     padding: 8px;
+    align-items: flex-start;
+    padding-top: max(8px, env(safe-area-inset-top));
   }
 
   .cabinet {
     padding: 12px;
     gap: 8px;
+    width: 100%;
   }
 
   .cabinet-header {
     font-size: 10px;
+    padding: 4px 0;
   }
 
   .cabinet-screen {
-    height: 55vh;
-    min-height: 350px;
-    max-height: 450px;
     border-width: 2px;
+    max-width: 100%;
   }
 
-  #game-container {
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  #game-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain;
+  .score-display,
+  .battery-display {
+    font-size: 10px;
+    padding: 4px 8px;
   }
 
   .start-panel {
@@ -95,30 +92,41 @@
 @media (max-width: 480px) {
   body {
     padding: 4px;
+    align-items: flex-start;
+    padding-top: max(4px, env(safe-area-inset-top));
   }
 
   .cabinet {
-    padding: 8px;
-    border-width: 3px;
+    padding: 6px;
+    border-width: 2px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    gap: 6px;
+    width: 100%;
+  }
+
+  .cabinet-header {
+    font-size: 8px;
+    padding: 3px 0;
   }
 
   .cabinet-screen {
-    height: 65vh;
-    min-height: 300px;
-    max-height: 500px;
     border-width: 2px;
+    max-width: 100%;
   }
 
-  #game-container {
-    width: 100% !important;
-    height: 100% !important;
+  .score-display,
+  .battery-display {
+    font-size: 8px;
+    padding: 3px 6px;
+    top: 10px;
   }
 
-  #game-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain;
+  .score-display {
+    left: 10px;
+  }
+
+  .battery-display {
+    right: 10px;
   }
 
   .start-panel {
