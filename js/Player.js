@@ -60,9 +60,17 @@ class Player {
    * Volver a la posición inicial y limpiar estado visual.
    */
   reset() {
+    console.log("🔄 Player reset");
     this.sprite.setPosition(this.spawnPoint.x, this.spawnPoint.y);
     this.sprite.setVelocity(0, 0);
+    this.sprite.setAcceleration(0, 0);
     this.sprite.setTint(0xffffff);
+    this.sprite.setAlpha(1);
+    // Asegurar que el cuerpo físico también se resetea
+    if (this.sprite.body) {
+      this.sprite.body.reset(this.spawnPoint.x, this.spawnPoint.y);
+    }
+    console.log("✅ Player reset complete");
   }
 
   /**
@@ -71,5 +79,13 @@ class Player {
   stop() {
     this.sprite.setVelocity(0, this.sprite.body.velocity.y);
     this.sprite.setTint(0x555555);
+  }
+
+  /**
+   * Crear el sprite del jugador (método requerido por GameScene)
+   */
+  create() {
+    // La creación ya se hace en el constructor, pero mantenemos este método por compatibilidad
+    return this.sprite;
   }
 }

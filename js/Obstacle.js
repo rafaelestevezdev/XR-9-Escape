@@ -1,50 +1,3 @@
-const GROUND_Y = 520;
-
-const OBSTACLE_CONFIG = {
-  crate: {
-    texture: "obstacle_crate",
-    originY: 1,
-    display: { width: 36, height: 40 },
-    hitbox: { width: 30, height: 34, offsetX: 0, offsetY: 4 },
-    minGap: 200,
-  },
-  hammer: {
-    texture: "obstacle_hammer",
-    originY: 1,
-    display: { width: 28, height: 44 },
-    hitbox: { width: 22, height: 38, offsetX: 0, offsetY: 4 },
-    minGap: 190,
-  },
-  tank: {
-    texture: "obstacle_tank",
-    originY: 1,
-    display: { width: 40, height: 52 },
-    hitbox: { width: 34, height: 46, offsetX: 0, offsetY: 4 },
-    minGap: 220,
-  },
-  gear: {
-    texture: "obstacle_gear",
-    originY: 0.5,
-    display: { width: 38, height: 38 },
-    hitbox: { width: 32, height: 32, offsetX: 0, offsetY: 0 },
-    minGap: 210,
-    rotating: true,
-    rotSpeed: 120,
-  },
-  battery: {
-    texture: "collectible_battery",
-    originY: 1,
-    display: { width: 24, height: 28 },
-    hitbox: { width: 20, height: 24, offsetX: 0, offsetY: 2 },
-    minGap: 180,
-    collectible: true,
-    yOffset: -60,
-    bobAmplitude: 6,
-    bobSpeed: 3.5,
-    isBattery: true,
-  },
-};
-
 /**
  * Clase Obstacle - Responsable de la creación de obstáculos individuales
  * Principio de responsabilidad única: Solo gestiona un obstáculo
@@ -54,7 +7,7 @@ class Obstacle {
     this.scene = scene;
     this.type = type;
     const config = this.resolveConfig(this.getConfig(type));
-    const spawnY = GROUND_Y + (config.yOffset || 0);
+    const spawnY = CONSTANTS.GAME_POSITIONS.GROUND_Y + (config.yOffset || 0);
     const originY = config.originY ?? 1;
 
     this.sprite = scene.physics.add.sprite(spawnX, spawnY, config.texture);
@@ -107,7 +60,7 @@ class Obstacle {
   }
 
   getConfig(type) {
-    return OBSTACLE_CONFIG[type] || OBSTACLE_CONFIG.crate;
+    return CONSTANTS.OBSTACLE_CONFIG[type] || CONSTANTS.OBSTACLE_CONFIG.crate;
   }
 
   resolveConfig(config) {

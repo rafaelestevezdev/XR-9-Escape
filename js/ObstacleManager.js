@@ -3,23 +3,36 @@
  * Principio de responsabilidad única: Solo gestiona la creación, actualización y destrucción de obstáculos
  */
 class ObstacleManager {
-  constructor(scene) {
+  constructor(scene, gameState) {
     this.scene = scene;
+    this.gameState = gameState;
     this.group = scene.physics.add.group({
       allowGravity: false,
       immovable: true,
     });
 
+    this.batteryGroup = scene.physics.add.group({
+      allowGravity: false,
+      immovable: true,
+    });
+
     this.obstacles = [];
-    this.spawnWindow = { min: 900, max: 1600 };
+    this.spawnWindow = CONSTANTS.OBSTACLE_MANAGER_CONFIG.SPAWN_WINDOW;
     this.nextSpawnDelay = Phaser.Math.Between(
       this.spawnWindow.min,
       this.spawnWindow.max
     );
     this.lastSpawnTime = scene.time.now;
-    this.speed = 350;
-    this.obstacleTypes = ["crate", "hammer", "tank", "gear", "battery"];
-    this.difficultyLevel = 1;
+    this.speed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
+    this.obstacleTypes = CONSTANTS.OBSTACLE_MANAGER_CONFIG.TYPES;
+    this.difficultyLevel = CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY;
+  }
+
+  /**
+   * Inicializar el manager
+   */
+  create() {
+    // Configuración inicial ya está en el constructor
   }
 
   /**
@@ -63,8 +76,8 @@ class ObstacleManager {
     const randomType = Phaser.Utils.Array.GetRandom(this.obstacleTypes);
     const obstacle = new Obstacle(
       this.scene,
-      this.group,
-      880,
+      randomType === "battery" ? this.batteryGroup : this.group,
+      CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
       randomType,
       this.speed
     );
@@ -80,30 +93,52 @@ class ObstacleManager {
   }
 
   /**
+   * Obtener el grupo de baterías
+   */
+  getBatteryGroup() {
+    return this.batteryGroup;
+  }
+
+  /**
    * Incrementar dificultad
    */
   increaseDifficulty() {
     this.difficultyLevel += 1;
-    this.spawnWindow.min = Math.max(500, this.spawnWindow.min - 60);
-    this.spawnWindow.max = Math.max(900, this.spawnWindow.max - 60);
+    this.spawnWindow.min = Math.max(
+      CONSTANTS.OBSTACLE_MANAGER_CONFIG.MIN_SPAWN_WINDOW.min,
+      this.spawnWindow.min -
+        CONSTANTS.OBSTACLE_MANAGER_CONFIG.SPAWN_WINDOW_DECREMENT
+    );
+    this.spawnWindow.max = Math.max(
+      CONSTANTS.OBSTACLE_MANAGER_CONFIG.MIN_SPAWN_WINDOW.max,
+      this.spawnWindow.max -
+        CONSTANTS.OBSTACLE_MANAGER_CONFIG.SPAWN_WINDOW_DECREMENT
+    );
 
-    this.speed = Math.min(this.speed + 40, 650);
+    this.speed = Math.min(
+      this.speed + CONSTANTS.GAME_INITIAL_STATE.SPEED_INCREMENT,
+      CONSTANTS.GAME_INITIAL_STATE.MAX_SPEED
+    );
   }
 
   /**
    * Resetear el gestor
    */
   reset() {
+    console.log("🔄 ObstacleManager reset");
     this.group.clear(true, true);
+    this.batteryGroup.clear(true, true);
     this.obstacles = [];
-    this.spawnWindow = { min: 900, max: 1600 };
+    this.spawnWindow = { ...CONSTANTS.OBSTACLE_MANAGER_CONFIG.SPAWN_WINDOW };
     this.nextSpawnDelay = Phaser.Math.Between(
       this.spawnWindow.min,
       this.spawnWindow.max
     );
+    // Importante: usar el tiempo actual de la escena para evitar spawns inmediatos
     this.lastSpawnTime = this.scene.time.now;
-    this.speed = 350;
-    this.difficultyLevel = 1;
+    this.speed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
+    this.difficultyLevel = CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY;
+    console.log("✅ ObstacleManager reset complete");
   }
 
   /**
@@ -123,6 +158,20 @@ class ObstacleManager {
         }
       }
     }
+    if (
+      sprite &&
+      this.batteryGroup &&
+      typeof this.batteryGroup.getChildren === "function"
+    ) {
+      const children = this.batteryGroup.getChildren();
+      if (children && children.includes(sprite)) {
+        try {
+          this.batteryGroup.remove(sprite, true, true);
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
     obstacle.destroy();
     this.obstacles = this.obstacles.filter((o) => o !== obstacle);
   }
@@ -133,5 +182,14 @@ class ObstacleManager {
 
   getDifficultyLevel() {
     return this.difficultyLevel;
+  }
+
+  /**
+   * Destruir el manager
+   */
+  destroy() {
+    this.group.clear(true, true);
+    this.batteryGroup.clear(true, true);
+    this.obstacles = [];
   }
 }

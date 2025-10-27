@@ -90,10 +90,22 @@
         document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('show'));
       }
     </script>
+    <!-- Cargar constantes primero -->
+    <script src="js/Constants.js"></script>
+    <!-- Cargar clases base -->
+    <script src="js/GameState.js"></script>
+    <script src="js/TextureGenerator.js"></script>
+    <script src="js/BackgroundManager.js"></script>
+    <script src="js/InputManager.js"></script>
+    <script src="js/HUDManager.js"></script>
+    <script src="js/PhysicsManager.js"></script>
+    <!-- Cargar entidades del juego -->
     <script src="js/Player.js"></script>
     <script src="js/Obstacle.js"></script>
     <script src="js/ObstacleManager.js"></script>
+    <!-- Cargar escena principal -->
     <script src="js/GameScene.js"></script>
-    <script src="js/game.js"></script>
+    <!-- Cargar punto de entrada -->
+    <script src="js/main.js"></script>
   </body>
 </html>
