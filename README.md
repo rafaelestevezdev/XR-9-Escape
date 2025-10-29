@@ -10,11 +10,18 @@ prototipo_XR-9/
 ├── .gitignore              # Archivos a ignorar en Git
 ├── README.md               # Este archivo
 ├── js/
-│   ├── game.js            # Configuración de Phaser y funciones globales
+│   ├── main.js            # Punto de entrada y configuración de Phaser
+│   ├── Constants.js       # Constantes del juego
 │   ├── GameScene.js       # Escena principal del juego
+│   ├── GameState.js       # Gestión del estado del juego
 │   ├── Player.js          # Lógica del jugador
 │   ├── Obstacle.js        # Definición de obstáculos
-│   └── ObstacleManager.js # Gestión de obstáculos
+│   ├── ObstacleManager.js # Gestión de obstáculos
+│   ├── InputManager.js    # Gestión de controles
+│   ├── HUDManager.js      # Gestión de interfaz de usuario
+│   ├── PhysicsManager.js  # Gestión de física
+│   ├── BackgroundManager.js # Gestión de fondos
+│   └── TextureGenerator.js # Generación procedural de texturas
 ├── css/
 │   ├── base.css           # Variables CSS y estilos base
 │   ├── hud.css            # Estilos del HUD (puntuación, batería)
@@ -22,53 +29,47 @@ prototipo_XR-9/
 │   ├── buttons.css        # Estilos de botones
 │   ├── modals.css         # Estilos de modales
 │   └── responsive.css     # Media queries responsivos
-├── html/
-│   ├── start-screen.html      # Pantalla de inicio
-│   ├── game-over-screen.html  # Pantalla de fin de juego
-│   ├── config-modal.html      # Modal de configuración
-│   └── controls-modal.html    # Modal de controles
-├── assets/
-│   └── sprites/           # Sprites del juego
-└── README.md              # Este archivo
+└── assets/
+    └── icon/
+        └── robot-icon.png # Icono del juego
 ```
 
 ## Arquitectura Modular
 
-### HTML
+El proyecto está organizado de manera modular para facilitar el mantenimiento y escalabilidad:
 
-Los componentes HTML están separados en archivos individuales para facilitar el mantenimiento:
+- **HTML**: Un archivo `index.html` principal que contiene toda la estructura del juego inline (canvas de Phaser, HUD, pantallas de inicio/game over, modales de configuración y controles). Se eliminó la carpeta `html/` para simplificar la estructura.
 
-- `start-screen.html`: Pantalla de bienvenida con título y botones
-- `game-over-screen.html`: Pantalla de fin de juego con puntuación
-- `config-modal.html`: Modal de configuración (placeholder)
-- `controls-modal.html`: Modal con instrucciones de juego
+- **CSS**: Estilos organizados por funcionalidad en `css/` (base, botones, HUD, modales, pantallas y responsivo) para un diseño industrial arcade adaptable a móviles.
 
-### CSS
+- **JavaScript**: Lógica del juego en `js/` con clases especializadas usando el patrón Manager con responsabilidad única:
 
-Los estilos están organizados por funcionalidad:
+  - `main.js`: Punto de entrada y configuración de Phaser
+  - `Constants.js`: Todas las constantes centralizadas
+  - `GameScene.js`: Escena principal que coordina todos los managers
+  - `GameState.js`: Gestión del estado (puntuación, velocidad, dificultad)
+  - `Player.js`: Comportamiento del jugador
+  - `Obstacle.js`: Definición y comportamiento individual de obstáculos
+  - `ObstacleManager.js`: Sistema de spawn y gestión colectiva
+  - `InputManager.js`: Gestión unificada de controles (teclado, táctil)
+  - `HUDManager.js`: Gestión de elementos de interfaz
+  - `PhysicsManager.js`: Gestión de física y colisiones
+  - `BackgroundManager.js`: Gestión de fondos paralax
+  - `TextureGenerator.js`: Generación procedural de sprites
 
-- `base.css`: Variables CSS, reset y estilos base del layout
-- `hud.css`: Elementos de interfaz durante el juego
-- `screens.css`: Pantallas de overlay (inicio, game over)
-- `buttons.css`: Todos los estilos de botones
-- `modals.css`: Estilos de ventanas modales
-- `responsive.css`: Media queries para dispositivos móviles
+- **Assets**: Recursos visuales en `assets/` (iconos por el momento, luego se agregarán nuevas cosas como sprites, sonidos, etc.).
 
-### JavaScript
+## Funciones Implementadas
 
-- `game.js`: Configuración de Phaser y funciones globales
-- `GameScene.js`: Lógica principal del juego
-- `Player.js`: Comportamiento del personaje
-- `Obstacle.js`: Definición y comportamiento de obstáculos
-- `ObstacleManager.js`: Sistema de spawn y gestión de obstáculos
+El prototipo incluye las características core de un corredor arcade:
 
-## Características
-
-- 🎮 Controles: Espacio, flecha arriba o toque en pantalla
-- 🔋 Sistema de baterías coleccionables
-- 📱 Diseño responsivo para móviles
-- 🎨 Tema industrial arcade
-- ⚡ Efectos visuales y animaciones
+- **Controles**: Salto con espacio, flecha arriba o toque táctil, con sistema de corte de salto para precisión.
+- **Jugabilidad**: Jugador robot que corre automáticamente, evita obstáculos y recolecta baterías para puntuación extra.
+- **Dificultad Progresiva**: Velocidad y frecuencia de obstáculos aumentan con el tiempo, con etapas marcadas.
+- **Interfaz**: HUD con puntuación, contador de baterías y velocidad; pantallas de inicio, pausa y game over.
+- **Física**: Sistema arcade con gravedad, colisiones y overlaps para interacciones realistas.
+- **Generación Procedural**: Texturas y fondos creados dinámicamente para optimizar carga.
+- **Optimizaciones**: Renderizado pixel art, soporte multitáctil y configuración responsiva.
 
 ## Cómo Ejecutar
 
@@ -80,9 +81,21 @@ Los estilos están organizados por funcionalidad:
 
 Para modificar el juego:
 
-1. HTML: Editar archivos en `html/` y actualizar referencias en `index.html`
-2. CSS: Modificar archivos en `css/` (todos se incluyen automáticamente)
-3. JS: Los archivos en `js/` se incluyen en orden específico
+1. **HTML**: Editar `index.html` directamente
+2. **CSS**: Modificar archivos en `css/` según la funcionalidad deseada
+3. **JS**: Los archivos se cargan en orden específico (ver `index.html`)
+4. **Constantes**: Modificar valores en `Constants.js` para ajustar comportamiento
+
+## Partes Faltantes para la Versión Beta
+
+Para llegar a una versión beta jugable y pulida, se requieren:
+
+- **Audio**: Efectos de sonido (saltos, colisiones, recolección) y música de fondo para inmersión.
+- **Más Contenido**: Variedad de obstáculos adicionales, power-ups y fondos temáticos por etapas.
+- **Sistema de Niveles**: Progresión con checkpoints, metas de puntuación y desbloqueables.
+- **Guardado**: Persistencia de mejores puntuaciones y configuraciones usando localStorage.
+- **Testing y Balanceo**: Ajustes de dificultad, testing en múltiples dispositivos y corrección de bugs menores.
+- **UI/UX**: Animaciones de transición, tutorial interactivo y opciones de accesibilidad (contraste, tamaño de botones).
 
 ## Escalabilidad
 

@@ -6,7 +6,7 @@ class Obstacle {
   constructor(scene, group, spawnX, type, speed) {
     this.scene = scene;
     this.type = type;
-    const config = this.resolveConfig(this.getConfig(type));
+    const config = this.getConfig(type);
     const spawnY = CONSTANTS.GAME_POSITIONS.GROUND_Y + (config.yOffset || 0);
     const originY = config.originY ?? 1;
 
@@ -45,12 +45,10 @@ class Obstacle {
     this.bobAmplitude = config.bobAmplitude || 0;
     this.bobSpeed = config.bobSpeed || 0;
     this.baseY = this.sprite.y;
-    this.points = config.points || 0;
 
     // Expose data for collision handling
     this.sprite.setData("type", type);
     this.sprite.setData("collectible", this.collectible);
-    this.sprite.setData("pit", !!config.pit);
     this.sprite.setData("ref", this);
 
     this.minGap = config.minGap;
@@ -61,18 +59,6 @@ class Obstacle {
 
   getConfig(type) {
     return CONSTANTS.OBSTACLE_CONFIG[type] || CONSTANTS.OBSTACLE_CONFIG.crate;
-  }
-
-  resolveConfig(config) {
-    if (!config) {
-      return {};
-    }
-    // Ya no usamos variants, devolvemos la config directamente
-    return {
-      ...config,
-      display: { ...(config.display || {}) },
-      hitbox: { ...(config.hitbox || {}) },
-    };
   }
 
   /**
@@ -109,13 +95,6 @@ class Obstacle {
       }
       this.sprite = null;
     }
-  }
-
-  collect() {
-    if (!this.collectible) return 0;
-    const pts = this.points || 0;
-    this.destroy();
-    return pts;
   }
 
   isBattery() {
