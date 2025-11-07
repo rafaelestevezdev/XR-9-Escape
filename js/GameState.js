@@ -14,6 +14,10 @@ class GameState {
   reset() {
     this.score = CONSTANTS.GAME_INITIAL_STATE.SCORE;
     this.batteries = CONSTANTS.GAME_INITIAL_STATE.BATTERIES;
+    this.energy = 100; // Energía inicial al 100%
+    this.maxEnergy = 100;
+    this.energyDrainRate = 8; // Unidades por segundo - drenaje gradual
+    this.energyRechargeAmount = 25; // Energía que da cada batería
     this.gameSpeed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
     this.gameOver = CONSTANTS.GAME_INITIAL_STATE.GAME_OVER;
     this.gamePaused = CONSTANTS.GAME_INITIAL_STATE.GAME_PAUSED;
@@ -72,10 +76,52 @@ class GameState {
   }
 
   /**
-   * Agrega una batería al contador
+   * Agrega una batería al contador y recarga energía
    */
   addBattery() {
     this.batteries += 1;
+    this.rechargeEnergy();
+  }
+
+  /**
+   * Actualiza la energía (se drena con el tiempo)
+   */
+  updateEnergy(deltaSeconds) {
+    if (!this.gameOver && !this.gamePaused && this.energy > 0) {
+      this.energy = Math.max(
+        0,
+        this.energy - this.energyDrainRate * deltaSeconds
+      );
+
+      // Si la energía llega a 0, termina el juego
+      if (this.energy <= 0) {
+        this.endGame();
+      }
+    }
+  }
+
+  /**
+   * Recarga energía al recoger una batería
+   */
+  rechargeEnergy() {
+    this.energy = Math.min(
+      this.maxEnergy,
+      this.energy + this.energyRechargeAmount
+    );
+  }
+
+  /**
+   * Obtiene el nivel de energía actual (0-100)
+   */
+  getEnergyLevel() {
+    return Math.floor(this.energy);
+  }
+
+  /**
+   * Obtiene el porcentaje de energía (0-100)
+   */
+  getEnergyPercentage() {
+    return Math.floor((this.energy / this.maxEnergy) * 100);
   }
 
   /**

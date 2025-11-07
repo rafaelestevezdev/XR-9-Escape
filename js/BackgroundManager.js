@@ -16,10 +16,8 @@ class BackgroundManager {
    * Crea todos los elementos del fondo
    */
   create() {
-    this.createSky();
-    this.createHorizon();
-    this.createGround();
-    this.createGroundDetails();
+    // Eliminar cualquier fondo existente y no crear nada (fondo desactivado)
+    this.destroy();
   }
 
   /**
@@ -72,12 +70,13 @@ class BackgroundManager {
    * Crea la capa del suelo
    */
   createGround() {
+    const groundHeight = 40; // banda plana como en el Dino
     this.groundLayer = this.scene.add
       .tileSprite(
         0,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 80,
+        CONSTANTS.GAME_POSITIONS.GROUND_Y - groundHeight,
         CONSTANTS.GAME_CONFIG.WIDTH,
-        160,
+        groundHeight,
         CONSTANTS.TEXTURE_KEYS.GROUND
       )
       .setOrigin(0, 0)
@@ -91,30 +90,13 @@ class BackgroundManager {
   createGroundDetails() {
     this.groundDetailLayer = this.scene.add.graphics({ x: 0, y: 0 });
 
-    this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.HORIZON_LINE, 0.22);
+    // Línea base del suelo (recta, estilo Dino)
+    this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.HORIZON_LINE, 0.35);
     this.groundDetailLayer.fillRect(
       0,
-      CONSTANTS.GAME_POSITIONS.GROUND_Y - 80,
+      CONSTANTS.GAME_POSITIONS.GROUND_Y,
       CONSTANTS.GAME_CONFIG.WIDTH,
-      4
-    );
-
-    this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.GROUND_SHADOW, 0.9);
-    for (let x = 0; x < CONSTANTS.GAME_CONFIG.WIDTH; x += 32) {
-      this.groundDetailLayer.fillRect(
-        x,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 76,
-        4,
-        24
-      );
-    }
-
-    this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.GROUND_EDGE, 0.4);
-    this.groundDetailLayer.fillRect(
-      0,
-      CONSTANTS.GAME_POSITIONS.GROUND_Y - 52,
-      CONSTANTS.GAME_CONFIG.WIDTH,
-      4
+      2
     );
 
     this.groundDetailLayer.setDepth(-9);
@@ -125,74 +107,14 @@ class BackgroundManager {
    * Actualiza la animación del fondo
    */
   update(deltaSeconds, gameSpeed) {
-    if (this.groundLayer) {
-      this.groundLayer.tilePositionX += gameSpeed * deltaSeconds;
-    }
+    // No-op: sin animación de fondo
   }
 
   /**
    * Maneja el redimensionamiento de la pantalla
    */
   handleResize(width, height) {
-    if (this.skyLayer) {
-      this.skyLayer.setDisplaySize(width, height);
-    }
-
-    if (this.horizonLayer) {
-      this.horizonLayer.clear();
-      this.horizonLayer.fillStyle(CONSTANTS.COLORS.HORIZON, 1);
-      this.horizonLayer.fillRect(
-        0,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 140,
-        width,
-        10
-      );
-      this.horizonLayer.fillStyle(CONSTANTS.COLORS.HORIZON_DETAIL, 0.65);
-      this.horizonLayer.fillRect(
-        0,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 130,
-        width,
-        6
-      );
-      this.horizonLayer.fillStyle(CONSTANTS.COLORS.HORIZON_LINE, 0.28);
-      this.horizonLayer.fillRect(
-        0,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 136,
-        width,
-        2
-      );
-    }
-
-    if (this.groundLayer) {
-      this.groundLayer.setDisplaySize(width, 160);
-    }
-
-    if (this.groundDetailLayer) {
-      this.groundDetailLayer.clear();
-      this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.HORIZON_LINE, 0.22);
-      this.groundDetailLayer.fillRect(
-        0,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 80,
-        width,
-        4
-      );
-      this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.GROUND_SHADOW, 0.9);
-      for (let x = 0; x < width; x += 32) {
-        this.groundDetailLayer.fillRect(
-          x,
-          CONSTANTS.GAME_POSITIONS.GROUND_Y - 76,
-          4,
-          24
-        );
-      }
-      this.groundDetailLayer.fillStyle(CONSTANTS.COLORS.GROUND_EDGE, 0.4);
-      this.groundDetailLayer.fillRect(
-        0,
-        CONSTANTS.GAME_POSITIONS.GROUND_Y - 52,
-        width,
-        4
-      );
-    }
+    // No-op: sin elementos de fondo que redimensionar
   }
 
   /**

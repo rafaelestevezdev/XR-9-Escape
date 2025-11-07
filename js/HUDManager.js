@@ -10,9 +10,11 @@ class HUDManager {
     // Referencias a elementos DOM
     this.scoreElement = null;
     this.batteryCountElement = null;
+    this.energyBarElement = null;
     this.speedIndicatorElement = null;
     this.stageIndicatorElement = null;
     this.startScreenElement = null;
+    this.pauseScreenElement = null;
     this.gameOverScreenElement = null;
     this.finalScoreElement = null;
     this.finalBatteriesElement = null;
@@ -36,6 +38,9 @@ class HUDManager {
     this.batteryCountElement = document.getElementById(
       CONSTANTS.HUD_ELEMENTS.BATTERY_COUNT
     );
+    this.energyBarElement = document.getElementById(
+      CONSTANTS.HUD_ELEMENTS.ENERGY_BAR
+    );
     this.speedIndicatorElement = document.getElementById(
       CONSTANTS.HUD_ELEMENTS.SPEED_INDICATOR
     );
@@ -44,6 +49,9 @@ class HUDManager {
     );
     this.startScreenElement = document.getElementById(
       CONSTANTS.HUD_ELEMENTS.START_SCREEN
+    );
+    this.pauseScreenElement = document.getElementById(
+      CONSTANTS.HUD_ELEMENTS.PAUSE_SCREEN
     );
     this.gameOverScreenElement = document.getElementById(
       CONSTANTS.HUD_ELEMENTS.GAME_OVER_SCREEN
@@ -64,6 +72,7 @@ class HUDManager {
 
     this.updateScore(gameState.getScore());
     this.updateBatteryCount(gameState.getBatteryCount());
+    this.updateEnergyBar(gameState.getEnergyPercentage());
     this.updateSpeed(gameState.getGameSpeed());
     this.updateStage(gameState.getDifficultyLevel());
   }
@@ -85,6 +94,24 @@ class HUDManager {
   updateBatteryCount(count) {
     if (this.batteryCountElement) {
       this.batteryCountElement.textContent = count;
+    }
+  }
+
+  /**
+   * Actualiza la barra de energía
+   */
+  updateEnergyBar(percentage) {
+    if (this.energyBarElement) {
+      this.energyBarElement.style.width = `${percentage}%`;
+      // Aplicar clases de estado (estética controlada por CSS)
+      this.energyBarElement.classList.remove("ok", "warn", "low");
+      if (percentage > 60) {
+        this.energyBarElement.classList.add("ok");
+      } else if (percentage > 30) {
+        this.energyBarElement.classList.add("warn");
+      } else {
+        this.energyBarElement.classList.add("low");
+      }
     }
   }
 
@@ -115,6 +142,7 @@ class HUDManager {
     if (this.startScreenElement) {
       this.startScreenElement.classList.remove("hidden");
     }
+    this.setPauseButtonVisible(true);
   }
 
   /**
@@ -138,6 +166,7 @@ class HUDManager {
       this.finalScoreElement.textContent = finalScore;
       this.finalBatteriesElement.textContent = finalBatteries;
       this.gameOverScreenElement.classList.add("show");
+      this.setPauseButtonVisible(false);
     }
   }
 
@@ -148,13 +177,16 @@ class HUDManager {
     if (this.gameOverScreenElement) {
       this.gameOverScreenElement.classList.remove("show");
     }
+    this.setPauseButtonVisible(true);
   }
 
   /**
    * Muestra la pantalla de pausa
    */
   showPauseScreen() {
-    // Por ahora, solo ocultamos el HUD. Podríamos agregar una pantalla de pausa específica
+    if (this.pauseScreenElement) {
+      this.pauseScreenElement.classList.add("show");
+    }
     this.hideHUD();
   }
 
@@ -162,7 +194,9 @@ class HUDManager {
    * Oculta la pantalla de pausa
    */
   hidePauseScreen() {
-    // Por ahora, solo mostramos el HUD. Podríamos agregar una pantalla de pausa específica
+    if (this.pauseScreenElement) {
+      this.pauseScreenElement.classList.remove("show");
+    }
     this.showHUD();
   }
 
@@ -172,6 +206,7 @@ class HUDManager {
   showHUD() {
     this.isVisible = true;
     // El HUD siempre está visible en el DOM, solo cambiamos la visibilidad lógica
+    this.setPauseButtonVisible(true);
   }
 
   /**
@@ -227,11 +262,21 @@ class HUDManager {
     // Limpiar referencias a elementos DOM
     this.scoreElement = null;
     this.batteryCountElement = null;
+    this.energyBarElement = null;
     this.speedIndicatorElement = null;
     this.stageIndicatorElement = null;
     this.startScreenElement = null;
     this.gameOverScreenElement = null;
     this.finalScoreElement = null;
     this.finalBatteriesElement = null;
+  }
+
+  /**
+   * Muestra u oculta el botón de pausa del DOM
+   */
+  setPauseButtonVisible(visible) {
+    const btn = document.getElementById("pause-button");
+    if (!btn) return;
+    btn.style.display = visible ? "flex" : "none";
   }
 }

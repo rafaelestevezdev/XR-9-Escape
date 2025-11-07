@@ -7,7 +7,15 @@ class Obstacle {
     this.scene = scene;
     this.type = type;
     const config = this.getConfig(type);
-    const spawnY = CONSTANTS.GAME_POSITIONS.GROUND_Y + (config.yOffset || 0);
+
+    // Calcular posición Y: usar la misma línea base que el jugador
+    let spawnY = CONSTANTS.GAME_POSITIONS.GROUND_Y;
+
+    // Solo aplicar yOffset para coleccionables (como baterías que flotan)
+    if (config.yOffset !== undefined) {
+      spawnY += config.yOffset;
+    }
+
     const originY = config.originY ?? 1;
 
     this.sprite = scene.physics.add.sprite(spawnX, spawnY, config.texture);
@@ -15,24 +23,8 @@ class Obstacle {
     this.sprite.setDisplaySize(config.display.width, config.display.height);
     this.sprite.body.setSize(config.hitbox.width, config.hitbox.height);
 
-    const offsetX =
-      (this.sprite.displayWidth - config.hitbox.width) * 0.5 +
-      config.hitbox.offsetX;
-    let offsetY;
-    if (originY === 1) {
-      offsetY =
-        this.sprite.displayHeight -
-        config.hitbox.height +
-        config.hitbox.offsetY;
-    } else if (originY === 0.5) {
-      offsetY =
-        (this.sprite.displayHeight - config.hitbox.height) * 0.5 +
-        config.hitbox.offsetY;
-    } else {
-      offsetY = config.hitbox.offsetY;
-    }
-
-    this.sprite.body.setOffset(offsetX, offsetY);
+    // Simplificar el cálculo de offset usando la configuración directamente
+    this.sprite.body.setOffset(config.hitbox.offsetX, config.hitbox.offsetY);
     this.sprite.body.allowGravity = false;
     this.sprite.setImmovable(true);
     group.add(this.sprite);

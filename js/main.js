@@ -43,7 +43,8 @@ const config = {
     antialias: false,
     roundPixels: true,
   },
-  scene: GameScene,
+  // Iniciar con la escena de fondo y lanzar la principal encima
+  scene: [EscenaIndustrial, GameScene],
 };
 
 // Variable global para la instancia del juego
@@ -105,6 +106,14 @@ function returnToMenu() {
   }
 }
 
+// Alternar pausa desde el DOM
+function togglePause() {
+  const scene = gameInstance?.scene.getScene("GameScene");
+  if (scene) {
+    scene.togglePause();
+  }
+}
+
 // Variable para controlar si el juego ha iniciado (por compatibilidad)
 let gameStarted = false;
 
@@ -133,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 window.startGame = startGame;
 window.restartGame = restartGame;
 window.returnToMenu = returnToMenu;
+window.togglePause = togglePause;
 window.showConfig = showConfig;
 window.showControls = showControls;
 window.closeModal = closeModal;

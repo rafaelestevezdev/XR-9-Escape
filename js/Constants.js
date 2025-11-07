@@ -32,21 +32,29 @@ const GAME_INITIAL_STATE = {
   MAX_SPEED: 650,
   SPEED_INCREMENT: 40,
 };
+// Cámara
+const CAMERA = {
+  ZOOM: 1.22, // zoom sutil para acercar la acción
+  PLAYER_SCREEN_Y_RATIO: 0.82, // posición del jugador en la pantalla (0=arriba, 1=abajo)
+  ROUND_PIXELS: true,
+};
 
 // Posiciones del juego
 const GAME_POSITIONS = {
+  // Línea base del suelo visual (y también referencia para obstáculos)
   GROUND_Y: 520,
   PLAYER_SPAWN_X: 120,
-  PLAYER_SPAWN_Y: 480,
+  // El jugador spawnea apoyado en el suelo (como el Dino)
+  PLAYER_SPAWN_Y: 520,
   OBSTACLE_SPAWN_X: 880,
 };
 
 // Configuración del jugador
 const PLAYER_CONFIG = {
-  JUMP_VELOCITY: -360,
-  CUT_JUMP_VELOCITY: -140,
-  DISPLAY_SIZE: { width: 32, height: 32 },
-  HITBOX: { width: 24, height: 30, offsetX: 4, offsetY: 2 },
+  JUMP_VELOCITY: -350,
+  CUT_JUMP_VELOCITY: -150,
+  DISPLAY_SIZE: { width: 80, height: 80 },
+  HITBOX: { width: 60, height: 70, offsetX: 10, offsetY: 10 },
   ORIGIN: { x: 0.5, y: 1 },
 };
 
@@ -55,29 +63,29 @@ const OBSTACLE_CONFIG = {
   crate: {
     texture: "obstacle_crate",
     originY: 1,
-    display: { width: 36, height: 40 },
-    hitbox: { width: 30, height: 34, offsetX: 0, offsetY: 4 },
+    display: { width: 25, height: 25 },
+    hitbox: { width: 20, height: 20, offsetX: 2.5, offsetY: 2.5 },
     minGap: 200,
   },
   hammer: {
     texture: "obstacle_hammer",
     originY: 1,
-    display: { width: 28, height: 44 },
-    hitbox: { width: 22, height: 38, offsetX: 0, offsetY: 4 },
+    display: { width: 30, height: 40 },
+    hitbox: { width: 25, height: 35, offsetX: 2.5, offsetY: 2.5 },
     minGap: 190,
   },
   tank: {
     texture: "obstacle_tank",
     originY: 1,
-    display: { width: 40, height: 52 },
-    hitbox: { width: 34, height: 46, offsetX: 0, offsetY: 4 },
+    display: { width: 35, height: 45 },
+    hitbox: { width: 30, height: 40, offsetX: 2.5, offsetY: 2.5 },
     minGap: 220,
   },
   gear: {
     texture: "obstacle_gear",
     originY: 0.5,
-    display: { width: 38, height: 38 },
-    hitbox: { width: 32, height: 32, offsetX: 0, offsetY: 0 },
+    display: { width: 30, height: 30 },
+    hitbox: { width: 25, height: 25, offsetX: 2.5, offsetY: 2.5 },
     minGap: 210,
     rotating: true,
     rotSpeed: 120,
@@ -85,12 +93,12 @@ const OBSTACLE_CONFIG = {
   battery: {
     texture: "collectible_battery",
     originY: 1,
-    display: { width: 24, height: 28 },
-    hitbox: { width: 20, height: 24, offsetX: 0, offsetY: 2 },
+    display: { width: 20, height: 25 },
+    hitbox: { width: 18, height: 22, offsetX: 1, offsetY: 1.5 },
     minGap: 180,
     collectible: true,
-    yOffset: -60,
-    bobAmplitude: 6,
+    yOffset: -70,
+    bobAmplitude: 8,
     bobSpeed: 3.5,
     isBattery: true,
   },
@@ -99,7 +107,7 @@ const OBSTACLE_CONFIG = {
 // Configuración del ObstacleManager
 const OBSTACLE_MANAGER_CONFIG = {
   SPAWN_WINDOW: { min: 900, max: 1600 },
-  TYPES: ["crate", "hammer", "tank", "gear", "battery"],
+  TYPES: ["crate", "hammer", "tank", "gear", "battery", "battery", "battery"],
   INITIAL_DIFFICULTY: 1,
   SPAWN_WINDOW_DECREMENT: 60,
   MIN_SPAWN_WINDOW: { min: 500, max: 900 },
@@ -118,6 +126,22 @@ const COLORS = {
   GROUND_LIGHT: 0x4e8495,
   GROUND_SHADOW: 0x12161f,
   GROUND_EDGE: 0x2d3949,
+  // Nuevos tonos metálicos y de luz para estética industrial avanzada
+  METAL_DARK: 0x12181f,
+  METAL_BASE: 0x1d2732,
+  METAL_MID: 0x2a3642,
+  METAL_LIGHT: 0x3b4c5c,
+  METAL_HIGHLIGHT: 0x5a7488,
+  METAL_EDGE: 0x0d1217,
+  HAZARD_YELLOW: 0xffc300,
+  HAZARD_ORANGE: 0xff8c1a,
+  HAZARD_BLACK: 0x0a0d10,
+  LIGHT_CYAN: 0x4fa2ff,
+  LIGHT_CYAN_SOFT: 0x8bc4ff,
+  LIGHT_GLOW_INNER: 0xb9dcff,
+  LIGHT_GLOW_OUTER: 0x2e76b3,
+  ENERGY_CORE: 0x41ffd9,
+  ENERGY_CORE_DARK: 0x1c8570,
   PLAYER_HEAD: 0xbdc3c7,
   PLAYER_VISOR: 0x2c3e50,
   PLAYER_BODY: 0x7f8c8d,
@@ -155,6 +179,12 @@ const COLORS = {
   BATTERY_TERMINAL_DARK: 0x2e7ed4,
   BATTERY_SPARK: 0xffffff,
   BATTERY_SHADOW: 0x000000,
+  // Nuevos colores para batería cilíndrica
+  BATTERY_BODY_DARK: 0x0f161d,
+  BATTERY_BODY: 0x1e2a36,
+  BATTERY_BODY_LIGHT: 0x2c3e50,
+  BATTERY_RING: 0x4fa2ff,
+  BATTERY_GLOW: 0x9fd6ff,
 };
 
 // Texturas
@@ -183,9 +213,11 @@ const CONTROLS = {
 const HUD_ELEMENTS = {
   SCORE: "score",
   BATTERY_COUNT: "battery-count",
+  ENERGY_BAR: "energy-bar",
   SPEED_INDICATOR: "speed-indicator",
   STAGE_INDICATOR: "stage-indicator",
   START_SCREEN: "start-screen",
+  PAUSE_SCREEN: "pause-screen",
   GAME_OVER_SCREEN: "game-over-screen",
   FINAL_SCORE: "final-score",
   FINAL_BATTERIES: "final-batteries",
@@ -201,8 +233,10 @@ const SCORING = {
 // Efectos visuales
 const VISUAL_EFFECTS = {
   GROUND_SEGMENT_WIDTH: 60,
-  GROUND_SEGMENT_HEIGHT: 80,
-  GROUND_COLLIDER_Y: 560,
+  // Altura del collider del suelo; aumentada para mejor detección
+  GROUND_SEGMENT_HEIGHT: 50,
+  // Posicionar el suelo un poco más abajo para que el jugador esté correctamente sobre él
+  GROUND_COLLIDER_Y: GAME_POSITIONS.GROUND_Y + 25,
   TOTAL_GROUND_WIDTH: 840,
 };
 
@@ -211,6 +245,7 @@ const CONSTANTS = {
   GAME_CONFIG,
   PHYSICS_CONFIG,
   GAME_INITIAL_STATE,
+  CAMERA,
   GAME_POSITIONS,
   PLAYER_CONFIG,
   OBSTACLE_CONFIG,

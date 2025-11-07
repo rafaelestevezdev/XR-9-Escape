@@ -84,6 +84,19 @@ class InputManager {
       }
     });
 
+    // Permitir continuar con ESC o también pausar con ESC
+    this.scene.input.keyboard.on("keydown-ESC", () => {
+      if (this.onPauseCallback) {
+        this.onPauseCallback();
+      }
+    });
+    // Compatibilidad con algunos navegadores/nombres de tecla
+    this.scene.input.keyboard.on("keydown-ESCAPE", () => {
+      if (this.onPauseCallback) {
+        this.onPauseCallback();
+      }
+    });
+
     // Evento para reiniciar
     this.scene.input.keyboard.on("keydown-R", () => {
       if (this.onRestartCallback) {

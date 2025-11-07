@@ -26,12 +26,68 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    // Cargar sprites del robot corriendo
+    for (let i = 1; i <= 10; i++) {
+      this.load.image(
+        `robot-run-${i}`,
+        `assets/sprites-robot/robot-run/player-run-${i}.png`
+      );
+    }
+
+    // Cargar sprites del robot saltando
+    for (let i = 1; i <= 6; i++) {
+      this.load.image(
+        `robot-jump-${i}`,
+        `assets/sprites-robot/robot-jump/player-jump-${i}.png`
+      );
+    }
+
+    // (Eliminado) No cargamos fondos por capas de imagen; usaremos fondo procedural con Phaser
+
     // Generar todas las texturas proceduralmente
     this.textureGenerator.generateAllTextures();
   }
 
   create() {
     console.log("🎮 GameScene.create() called");
+
+    // Configurar cámara (zoom y encuadre)
+    this.configureCamera();
+
+    // Crear animación del robot corriendo
+    this.anims.create({
+      key: "robot-run",
+      frames: [
+        { key: "robot-run-1" },
+        { key: "robot-run-2" },
+        { key: "robot-run-3" },
+        { key: "robot-run-4" },
+        { key: "robot-run-5" },
+        { key: "robot-run-6" },
+        { key: "robot-run-7" },
+        { key: "robot-run-8" },
+        { key: "robot-run-9" },
+        { key: "robot-run-10" },
+      ],
+      frameRate: 15,
+      repeat: -1,
+    });
+
+    // Crear animación del robot saltando
+    this.anims.create({
+      key: "robot-jump",
+      frames: [
+        { key: "robot-jump-1" },
+        { key: "robot-jump-2" },
+        { key: "robot-jump-3" },
+        { key: "robot-jump-4" },
+        { key: "robot-jump-5" },
+        { key: "robot-jump-6" },
+      ],
+      frameRate: 12,
+      repeat: 0, // No se repite, solo se ejecuta una vez
+    });
+
     // Configurar física
     this.physicsManager.setupWorldPhysics();
     this.physicsManager.createGround();
@@ -54,6 +110,22 @@ class GameScene extends Phaser.Scene {
     // Mostrar pantalla de inicio
     this.hudManager.showStartScreen();
     console.log("✅ GameScene created successfully");
+  }
+
+  /**
+   * Configura el zoom y encuadre de la cámara para acercar la acción
+   */
+  configureCamera() {
+    const cam = this.cameras.main;
+    cam.setZoom(CONSTANTS.CAMERA.ZOOM);
+    if (CONSTANTS.CAMERA.ROUND_PIXELS) cam.setRoundPixels(true);
+
+    // Calcular encuadre vertical para que el jugador quede en la parte baja de la pantalla
+    const viewHeight = cam.height / cam.zoom;
+    const targetY = CONSTANTS.GAME_POSITIONS.GROUND_Y; // referencia del suelo
+    const desiredRatio = CONSTANTS.CAMERA.PLAYER_SCREEN_Y_RATIO; // 0 (arriba) - 1 (abajo)
+    const scrollY = Math.max(0, targetY - viewHeight * desiredRatio);
+    cam.setScroll(0, scrollY);
   }
 
   createPlayer() {
@@ -153,12 +225,26 @@ class GameScene extends Phaser.Scene {
   pauseGame() {
     this.gameState.pauseGame();
     this.physicsManager.pausePhysics();
+    // Pausar animaciones y tweens de esta escena
+    if (this.anims && this.anims.pauseAll) this.anims.pauseAll();
+    if (this.tweens && this.tweens.pauseAll) this.tweens.pauseAll();
+    // Pausar el fondo procedural para detener el parallax
+    if (this.scene.isActive("EscenaIndustrial")) {
+      this.scene.pause("EscenaIndustrial");
+    }
     this.hudManager.showPauseScreen();
   }
 
   resumeGame() {
     this.gameState.resumeGame();
     this.physicsManager.resumePhysics();
+    // Reanudar animaciones y tweens
+    if (this.anims && this.anims.resumeAll) this.anims.resumeAll();
+    if (this.tweens && this.tweens.resumeAll) this.tweens.resumeAll();
+    // Reanudar fondo procedural
+    if (this.scene.isPaused && this.scene.isPaused("EscenaIndustrial")) {
+      this.scene.resume("EscenaIndustrial");
+    }
     this.hudManager.hidePauseScreen();
   }
 
@@ -266,6 +352,13 @@ class GameScene extends Phaser.Scene {
 
       // Actualizar estado del juego
       this.gameState.incrementScore(deltaSeconds);
+      this.gameState.updateEnergy(deltaSeconds);
+
+      // Verificar si el juego terminó por falta de energía
+      if (this.gameState.isGameOver()) {
+        // Finalizar correctamente el juego (pausa física, detener jugador y mostrar UI)
+        this.endGame();
+      }
 
       // Aumentar dificultad
       if (this.gameState.shouldIncreaseDifficulty(time)) {

@@ -26,18 +26,30 @@
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
 }
 
+.help-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  display: block;
+  margin: 0 auto;
+}
+
 .config-btn {
-  padding: 12px 24px;
-  font-size: 10px;
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  padding: 8px 12px;
+  font-size: 12px;
   font-family: "Press Start 2P", monospace;
   border: 2px solid var(--panel-edge);
   background: var(--panel);
   color: var(--panel-edge);
   cursor: pointer;
   letter-spacing: 0.2em;
-  margin-top: 10px;
   transition: all 0.2s ease;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .config-btn:hover {
@@ -51,6 +63,50 @@
   transform: translateY(1px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
 }
+
+.config-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Pause button (top-left) */
+.pause-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--panel-edge);
+  background: rgba(20, 28, 38, 0.9);
+  color: var(--panel-edge);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+  z-index: 5;
+}
+
+.pause-btn:hover {
+  background: var(--panel-edge);
+  color: var(--ink);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35), 0 0 10px rgba(100, 255, 218, 0.35);
+}
+
+.pause-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* ...existing code... */
 
 .game-over-panel {
   display: none;
