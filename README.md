@@ -106,3 +106,39 @@ Esta estructura modular permite:
 - ✅ Reutilización de código
 - ✅ Desarrollo colaborativo
 - ✅ Testing por separado de cada módulo
+
+## Optimizaciones y Refactorizaciones Recientes
+
+Se aplicaron mejoras para reducir consumo de CPU/GPU y accesibilidad sin romper APIs existentes:
+
+1. Flag `CONSTANTS.DEBUG`: Todos los logs verbosos ahora se muestran solo si `DEBUG` es `true`, evitando saturar la consola y gasto innecesario de I/O.
+2. Eliminado log inicial de `Constants.js`: La carga de constantes no genera salida.
+3. `InputManager`: Se retiró el listener nativo adicional `touchstart` sobre el canvas que duplicaba eventos de salto/inicio; se confía solo en `pointerdown` de Phaser (un único flujo de entrada).
+4. `HUDManager`: Cache de últimos valores (`_lastScore`, `_lastBatteryCount`, etc.) para evitar escribir al DOM cada frame. Solo actualiza cuando hay cambios → menos reflows y repaints.
+5. `EscenaIndustrial`: Redibujos de capas gráficas throttled a ~30 FPS (acumuladores de tiempo) en vez de 60 FPS constantes. Reduce llamadas a `graphics.clear()` y draws intensivos.
+6. CSS (`hud.css`): Añadido `@media (prefers-reduced-motion: reduce)` para desactivar animaciones continuas (`pulse`, flujo de energía) respetando accesibilidad y ahorrando batería.
+7. Limpieza selectiva: No se eliminaron métodos públicos (como `Player.create()`) para mantener compatibilidad futura con factorías o test harness.
+
+### Impacto Esperado
+
+- Menos trabajo por frame (menos escrituras DOM y menos draw calls).
+- Mejor rendimiento en móviles gama media/baja.
+- Aislamiento claro de logs de depuración.
+
+### Activar Depuración
+
+En `Constants.js` establecer:
+
+```js
+DEBUG: true;
+```
+
+Dentro del objeto `CONSTANTS`.
+
+### Próximos Pasos Sugeridos
+
+- Pooling de obstáculos para reutilizar sprites en lugar de destruir/crear.
+- Guardar mejor puntuación en `localStorage`.
+- Sistema de audio cargado de forma diferida.
+- Tests unitarios mínimos (gestión de dificultad, drenaje y recarga de energía).
+- Añadir un pequeño profiler si `DEBUG` está activo (medir ms en update/redraw y mostrar overlay opcional).

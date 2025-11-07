@@ -6,11 +6,11 @@
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: "GameScene" });
-    console.log("✅ GameScene constructor called");
+    if (CONSTANTS.DEBUG) console.log("✅ GameScene constructor called");
   }
 
   init() {
-    console.log("🎮 GameScene.init() called");
+    if (CONSTANTS.DEBUG) console.log("🎮 GameScene.init() called");
     // Inicializar todos los managers
     this.gameState = new GameState();
     this.inputManager = new InputManager(this);
@@ -22,7 +22,7 @@ class GameScene extends Phaser.Scene {
     // Inicializar objetos del juego
     this.player = null;
     this.obstacleManager = null;
-    console.log("✅ All managers initialized");
+    if (CONSTANTS.DEBUG) console.log("✅ All managers initialized");
   }
 
   preload() {
@@ -49,7 +49,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    console.log("🎮 GameScene.create() called");
+    if (CONSTANTS.DEBUG) console.log("🎮 GameScene.create() called");
 
     // Configurar cámara (zoom y encuadre)
     this.configureCamera();
@@ -109,7 +109,7 @@ class GameScene extends Phaser.Scene {
 
     // Mostrar pantalla de inicio
     this.hudManager.showStartScreen();
-    console.log("✅ GameScene created successfully");
+    if (CONSTANTS.DEBUG) console.log("✅ GameScene created successfully");
   }
 
   /**
@@ -205,13 +205,13 @@ class GameScene extends Phaser.Scene {
   }
 
   startGame() {
-    console.log("▶️ Starting game...");
+    if (CONSTANTS.DEBUG) console.log("▶️ Starting game...");
     this.gameState.setPlayerInteracted();
     this.gameState.startGameplay();
     this.gameState.updateLastDifficultyIncrease(this.time.now);
     this.hudManager.hideStartScreen();
     this.hudManager.showHUD();
-    console.log("✅ Game started");
+    if (CONSTANTS.DEBUG) console.log("✅ Game started");
   }
 
   togglePause() {
@@ -249,7 +249,7 @@ class GameScene extends Phaser.Scene {
   }
 
   restartGame() {
-    console.log("🔄 Restarting game...");
+    if (CONSTANTS.DEBUG) console.log("🔄 Restarting game...");
 
     // Ocultar pantalla de game over
     this.hudManager.hideGameOverScreen();
@@ -278,7 +278,7 @@ class GameScene extends Phaser.Scene {
     // Resetear física al final para que todo esté listo
     this.physicsManager.resumePhysics();
 
-    console.log("✅ Game restarted");
+    if (CONSTANTS.DEBUG) console.log("✅ Game restarted");
   }
 
   /**

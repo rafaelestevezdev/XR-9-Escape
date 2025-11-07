@@ -55,7 +55,7 @@ function initializeGame() {
   try {
     // Crear instancia del juego
     gameInstance = new Phaser.Game(config);
-    console.log("🎮 XR-9 Game initialized successfully");
+    if (CONSTANTS.DEBUG) console.log("🎮 XR-9 Game initialized successfully");
 
     return gameInstance;
   } catch (error) {
@@ -74,13 +74,13 @@ function destroyGame() {
   if (gameInstance) {
     gameInstance.destroy(true);
     gameInstance = null;
-    console.log("🗑️ Game instance destroyed");
+    if (CONSTANTS.DEBUG) console.log("🗑️ Game instance destroyed");
   }
 }
 
 // Funciones de interfaz para el DOM (mantenidas por compatibilidad)
 function startGame() {
-  console.log("▶️ startGame() called from main.js");
+  if (CONSTANTS.DEBUG) console.log("▶️ startGame() called from main.js");
   const scene = gameInstance?.scene.getScene("GameScene");
   if (scene && !gameStarted) {
     gameStarted = true;
@@ -89,7 +89,7 @@ function startGame() {
 }
 
 function restartGame() {
-  console.log("🔄 restartGame() called from main.js");
+  if (CONSTANTS.DEBUG) console.log("🔄 restartGame() called from main.js");
   const scene = gameInstance?.scene.getScene("GameScene");
   if (scene) {
     gameStarted = true; // Mantener el estado de que el juego ha comenzado
@@ -98,7 +98,7 @@ function restartGame() {
 }
 
 function returnToMenu() {
-  console.log("🏠 returnToMenu() called from main.js");
+  if (CONSTANTS.DEBUG) console.log("🏠 returnToMenu() called from main.js");
   gameStarted = false;
   const scene = gameInstance?.scene.getScene("GameScene");
   if (scene) {
@@ -134,7 +134,7 @@ function closeModal() {
 
 // Inicializar el juego cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 Starting XR-9 Game...");
+  if (CONSTANTS.DEBUG) console.log("🚀 Starting XR-9 Game...");
   initializeGame();
 });
 

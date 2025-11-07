@@ -30,12 +30,6 @@
       </header>
 
       <div class="cabinet-screen">
-        <button id="pause-button" class="pause-btn" onclick="togglePause()" title="Pausa (P/ESC)" aria-label="Pausa">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
-            <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
-          </svg>
-        </button>
         <div id="game-container"></div>
         <div id="score" class="score-display">00000 M</div>
         <div id="battery-counter" class="battery-display">
@@ -54,7 +48,10 @@
           <span id="battery-count">0</span>
         </div>
         <div class="energy-container" aria-label="Energía">
-          <div id="energy-bar" class="energy-bar ok"></div>
+          <span class="energy-text">ENERGIA:</span>
+          <div class="energy-track">
+            <div id="energy-bar" class="energy-bar ok"></div>
+          </div>
         </div>
 
         <!-- Include: html/start-screen.html -->

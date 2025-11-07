@@ -12,8 +12,8 @@
 
 .battery-display {
   position: absolute;
-  top: 18px;
-  right: 52px; /* Dejado espacio para el botón de pausa a la derecha */
+  top: 50px;
+  left: 18px;
   padding: 6px 10px;
   background: rgba(20, 28, 38, 0.85);
   border: 2px solid #4fa2ff;
@@ -48,15 +48,30 @@
 
 .energy-container {
   position: absolute;
-  top: 60px;
+  top: 12px;
   right: 18px;
-  width: 160px;
-  height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px;
   background: rgba(20, 28, 38, 0.85);
   border: 2px solid #2a3a4d;
-  padding: 3px;
-  box-sizing: border-box;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.energy-text {
+  margin: 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: #9fd6ff;
+}
+
+.energy-track {
+  width: 160px;
+  height: 18px;
+  background: rgba(12, 18, 26, 0.7);
+  border: 2px solid #2a3a4d;
+  position: relative;
+  overflow: hidden;
 }
 
 .energy-bar {
@@ -67,6 +82,9 @@
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
+  background: linear-gradient(90deg, #2ee6a0 0%, #41ffd9 50%, #4fa2ff 100%);
+  box-shadow: 0 0 8px rgba(79, 162, 255, 0.45),
+    inset 0 0 4px rgba(185, 220, 255, 0.6);
 }
 
 /* Estado visual por nivel de energía */
@@ -86,6 +104,18 @@
   background: linear-gradient(90deg, #ff6b6b 0%, #ff3b30 60%, #c62828 100%);
   box-shadow: 0 0 8px rgba(255, 59, 48, 0.35),
     inset 0 0 4px rgba(255, 107, 107, 0.45);
+}
+
+.energy-bar.empty {
+  background: repeating-linear-gradient(
+    90deg,
+    #222b33 0px,
+    #222b33 6px,
+    #1a2229 6px,
+    #1a2229 12px
+  );
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
+  filter: grayscale(40%);
 }
 
 /* Efecto de flujo */
@@ -113,5 +143,15 @@
   }
   100% {
     transform: translateX(24px);
+  }
+}
+
+/* Respeto a usuarios y ahorro de recursos: desactivar animaciones si el usuario prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .battery-icon {
+    animation: none !important;
+  }
+  .energy-bar::before {
+    animation: none !important;
   }
 }

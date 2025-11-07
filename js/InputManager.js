@@ -43,8 +43,7 @@ class InputManager {
     // Configurar eventos de touch
     this.setupTouchEvents();
 
-    // Configurar eventos táctiles nativos adicionales para mejor rendimiento
-    this.setupNativeTouchEvents();
+    // Los eventos táctiles nativos adicionales se han eliminado para evitar duplicidades
   }
 
   /**
@@ -128,8 +127,8 @@ class InputManager {
       }
     });
 
-    // También escuchar el evento táctil nativo para respuesta más rápida
-    this.scene.input.addPointer(1); // Asegurar que hay al menos 1 puntero activo
+    // Asegurar que hay al menos 1 puntero activo
+    this.scene.input.addPointer(1);
   }
 
   /**
@@ -244,40 +243,13 @@ class InputManager {
   /**
    * Configura eventos táctiles nativos del navegador para mejor rendimiento
    */
-  setupNativeTouchEvents() {
-    const canvas = this.scene.game.canvas;
-
-    // Evento touchstart nativo (más rápido que pointerdown en móviles)
-    this.nativeTouchHandler = (e) => {
-      e.preventDefault(); // Prevenir delay de 300ms del navegador
-
-      // Llamar ambos callbacks
-      if (this.onStartCallback) {
-        this.onStartCallback();
-      }
-      if (this.onJumpCallback) {
-        this.onJumpCallback();
-      }
-    };
-
-    canvas.addEventListener("touchstart", this.nativeTouchHandler, {
-      passive: false,
-    });
-
-    // Guardar referencia para limpieza posterior
-    this.canvas = canvas;
-  }
+  // Eliminado: setupNativeTouchEvents para evitar eventos duplicados y sobrecarga
 
   /**
    * Destruye el manager y limpia eventos
    */
   destroy() {
-    // Limpiar evento táctil nativo
-    if (this.canvas && this.nativeTouchHandler) {
-      this.canvas.removeEventListener("touchstart", this.nativeTouchHandler);
-      this.canvas = null;
-      this.nativeTouchHandler = null;
-    }
+    // No hay eventos táctiles nativos que limpiar
 
     if (this.spaceKey) {
       this.spaceKey.destroy();

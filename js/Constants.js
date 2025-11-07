@@ -132,7 +132,6 @@ const COLORS = {
   METAL_MID: 0x2a3642,
   METAL_LIGHT: 0x3b4c5c,
   METAL_HIGHLIGHT: 0x5a7488,
-  METAL_EDGE: 0x0d1217,
   HAZARD_YELLOW: 0xffc300,
   HAZARD_ORANGE: 0xff8c1a,
   HAZARD_BLACK: 0x0a0d10,
@@ -256,7 +255,8 @@ const CONSTANTS = {
   HUD_ELEMENTS,
   SCORING,
   VISUAL_EFFECTS,
+  // Flag de depuración para desactivar logs en producción
+  DEBUG: false,
 };
 
-// Log para confirmar carga
-console.log("✅ Constants.js loaded");
+// Nota: Se omiten logs por defecto para ahorrar recursos

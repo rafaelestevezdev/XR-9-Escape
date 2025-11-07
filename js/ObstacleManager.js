@@ -125,7 +125,7 @@ class ObstacleManager {
    * Resetear el gestor
    */
   reset() {
-    console.log("🔄 ObstacleManager reset");
+    if (CONSTANTS.DEBUG) console.log("🔄 ObstacleManager reset");
     this.group.clear(true, true);
     this.batteryGroup.clear(true, true);
     this.obstacles = [];
@@ -138,7 +138,7 @@ class ObstacleManager {
     this.lastSpawnTime = this.scene.time.now;
     this.speed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
     this.difficultyLevel = CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY;
-    console.log("✅ ObstacleManager reset complete");
+    if (CONSTANTS.DEBUG) console.log("✅ ObstacleManager reset complete");
   }
 
   /**

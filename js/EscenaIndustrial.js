@@ -21,6 +21,8 @@ class EscenaIndustrial extends Phaser.Scene {
     );
     this.floorThickness = Math.max(this.sceneHeight - this.floorY, 48);
     this.wrapPadding = this.sceneWidth * 0.6;
+    // Acumuladores para reducir redibujos (throttling ~30 FPS)
+    this._groundRedrawAccum = 0;
   }
 
   create() {
@@ -144,7 +146,7 @@ class EscenaIndustrial extends Phaser.Scene {
       elements.push(this.spawnStructure(config, i * spacing));
     }
 
-    this.layers[name] = { graphics, elements, config };
+    this.layers[name] = { graphics, elements, config, redrawAccum: 0 };
     this.redrawStructureLayer(name);
   }
 
@@ -469,7 +471,12 @@ class EscenaIndustrial extends Phaser.Scene {
       }
     });
 
-    this.redrawStructureLayer(name);
+    // Redibujar como máximo a ~30 FPS para reducir carga
+    layer.redrawAccum += deltaSeconds;
+    if (layer.redrawAccum >= 1 / 30) {
+      this.redrawStructureLayer(name);
+      layer.redrawAccum = 0;
+    }
   }
 
   recycleStructure(element, config) {
@@ -504,7 +511,12 @@ class EscenaIndustrial extends Phaser.Scene {
       }
     });
 
-    this.redrawGroundDetails();
+    // Redibujar con límite de ~30 FPS
+    this._groundRedrawAccum += deltaSeconds;
+    if (this._groundRedrawAccum >= 1 / 30) {
+      this.redrawGroundDetails();
+      this._groundRedrawAccum = 0;
+    }
   }
 
   recycleFloorSegment(segment, config) {

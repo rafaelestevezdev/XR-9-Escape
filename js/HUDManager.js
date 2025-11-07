@@ -21,6 +21,13 @@ class HUDManager {
 
     // Estado del HUD
     this.isVisible = true;
+
+    // Cache de últimos valores para evitar tocar el DOM en cada frame
+    this._lastScore = null;
+    this._lastBatteryCount = null;
+    this._lastEnergyPercent = null;
+    this._lastSpeedRounded = null;
+    this._lastStage = null;
   }
 
   /**
@@ -69,12 +76,35 @@ class HUDManager {
    */
   update(gameState, delta) {
     if (!this.isVisible) return;
+    const score = gameState.getScore();
+    if (score !== this._lastScore) {
+      this.updateScore(score);
+      this._lastScore = score;
+    }
 
-    this.updateScore(gameState.getScore());
-    this.updateBatteryCount(gameState.getBatteryCount());
-    this.updateEnergyBar(gameState.getEnergyPercentage());
-    this.updateSpeed(gameState.getGameSpeed());
-    this.updateStage(gameState.getDifficultyLevel());
+    const batteries = gameState.getBatteryCount();
+    if (batteries !== this._lastBatteryCount) {
+      this.updateBatteryCount(batteries);
+      this._lastBatteryCount = batteries;
+    }
+
+    const energyPct = gameState.getEnergyPercentage();
+    if (energyPct !== this._lastEnergyPercent) {
+      this.updateEnergyBar(energyPct);
+      this._lastEnergyPercent = energyPct;
+    }
+
+    const speedRounded = Math.round(gameState.getGameSpeed());
+    if (speedRounded !== this._lastSpeedRounded) {
+      this.updateSpeed(speedRounded);
+      this._lastSpeedRounded = speedRounded;
+    }
+
+    const stage = gameState.getDifficultyLevel();
+    if (stage !== this._lastStage) {
+      this.updateStage(stage);
+      this._lastStage = stage;
+    }
   }
 
   /**
@@ -104,8 +134,10 @@ class HUDManager {
     if (this.energyBarElement) {
       this.energyBarElement.style.width = `${percentage}%`;
       // Aplicar clases de estado (estética controlada por CSS)
-      this.energyBarElement.classList.remove("ok", "warn", "low");
-      if (percentage > 60) {
+      this.energyBarElement.classList.remove("ok", "warn", "low", "empty");
+      if (percentage <= 0) {
+        this.energyBarElement.classList.add("empty");
+      } else if (percentage > 60) {
         this.energyBarElement.classList.add("ok");
       } else if (percentage > 30) {
         this.energyBarElement.classList.add("warn");
@@ -120,7 +152,8 @@ class HUDManager {
    */
   updateSpeed(speed) {
     if (this.speedIndicatorElement) {
-      this.speedIndicatorElement.textContent = `VEL ${Math.round(speed)}`;
+      // speed ya llega redondeado desde update()
+      this.speedIndicatorElement.textContent = `VEL ${speed}`;
     }
   }
 

@@ -105,7 +105,7 @@ class Player {
    * Volver a la posición inicial y limpiar estado visual.
    */
   reset() {
-    console.log("🔄 Player reset");
+    if (CONSTANTS.DEBUG) console.log("🔄 Player reset");
 
     // Resetear posición y física
     this.sprite.setPosition(this.spawnPoint.x, this.spawnPoint.y);
@@ -125,7 +125,7 @@ class Player {
 
     // Reiniciar animación de correr
     this.sprite.play("robot-run");
-    console.log("✅ Player reset complete");
+    if (CONSTANTS.DEBUG) console.log("✅ Player reset complete");
   }
 
   /**
