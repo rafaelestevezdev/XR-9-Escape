@@ -102,12 +102,33 @@ const OBSTACLE_CONFIG = {
     bobSpeed: 3.5,
     isBattery: true,
   },
+  dash: {
+    texture: "collectible_dash",
+    originY: 1,
+    display: { width: 22, height: 22 },
+    hitbox: { width: 20, height: 20, offsetX: 1, offsetY: 1 },
+    minGap: 220,
+    collectible: true,
+    yOffset: -72,
+    bobAmplitude: 10,
+    bobSpeed: 4.0,
+    isDash: true,
+  },
 };
 
 // Configuración del ObstacleManager
 const OBSTACLE_MANAGER_CONFIG = {
   SPAWN_WINDOW: { min: 900, max: 1600 },
-  TYPES: ["crate", "hammer", "tank", "gear", "battery", "battery", "battery"],
+  TYPES: [
+    "crate",
+    "hammer",
+    "tank",
+    "gear",
+    "battery",
+    "battery",
+    "battery",
+    "dash", // baja frecuencia
+  ],
   INITIAL_DIFFICULTY: 1,
   SPAWN_WINDOW_DECREMENT: 60,
   MIN_SPAWN_WINDOW: { min: 500, max: 900 },
@@ -196,6 +217,7 @@ const TEXTURE_KEYS = {
   TANK: "obstacle_tank",
   GEAR: "obstacle_gear",
   BATTERY: "collectible_battery",
+  DASH: "collectible_dash",
 };
 
 // Controles
@@ -220,6 +242,7 @@ const HUD_ELEMENTS = {
   GAME_OVER_SCREEN: "game-over-screen",
   FINAL_SCORE: "final-score",
   FINAL_BATTERIES: "final-batteries",
+  POWERUP_INDICATOR: "powerup-indicator",
 };
 
 // Puntuación
@@ -239,6 +262,30 @@ const VISUAL_EFFECTS = {
   TOTAL_GROUND_WIDTH: 840,
 };
 
+// Power-ups
+const POWERUPS = {
+  DASH: {
+    KEY: "dash",
+    TEXTURE: TEXTURE_KEYS.DASH,
+    DURATION_MS: 2000,
+    SPEED_BOOST: 220, // incremento temporal de velocidad del mundo
+    HUD_LABEL: "DASH",
+  },
+};
+
+// Audio
+const AUDIO = {
+  BGM_MAIN: "bgm_main",
+  SFX_PICKUP: "sfx_pickup",
+};
+
+const AUDIO_CONFIG = {
+  MUSIC_VOLUME: 0.45,
+  // Volumen por defecto para efectos (SFX)
+  SFX_VOLUME: 0.8,
+  FADE_DURATION_MS: 400,
+};
+
 // Exportar todas las constantes
 const CONSTANTS = {
   GAME_CONFIG,
@@ -255,6 +302,9 @@ const CONSTANTS = {
   HUD_ELEMENTS,
   SCORING,
   VISUAL_EFFECTS,
+  POWERUPS,
+  AUDIO,
+  AUDIO_CONFIG,
   // Flag de depuración para desactivar logs en producción
   DEBUG: false,
 };

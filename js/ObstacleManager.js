@@ -74,9 +74,11 @@ class ObstacleManager {
    */
   spawn() {
     const randomType = Phaser.Utils.Array.GetRandom(this.obstacleTypes);
+    const cfg = CONSTANTS.OBSTACLE_CONFIG[randomType] || {};
+    const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
     const obstacle = new Obstacle(
       this.scene,
-      randomType === "battery" ? this.batteryGroup : this.group,
+      targetGroup,
       CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
       randomType,
       this.speed

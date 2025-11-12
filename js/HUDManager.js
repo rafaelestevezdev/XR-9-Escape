@@ -18,6 +18,7 @@ class HUDManager {
     this.gameOverScreenElement = null;
     this.finalScoreElement = null;
     this.finalBatteriesElement = null;
+    this.powerupIndicatorElement = null;
 
     // Estado del HUD
     this.isVisible = true;
@@ -28,6 +29,8 @@ class HUDManager {
     this._lastEnergyPercent = null;
     this._lastSpeedRounded = null;
     this._lastStage = null;
+    this._lastPowerupLabel = null;
+    this._lastPowerupSecs = null;
   }
 
   /**
@@ -69,6 +72,9 @@ class HUDManager {
     this.finalBatteriesElement = document.getElementById(
       CONSTANTS.HUD_ELEMENTS.FINAL_BATTERIES
     );
+    this.powerupIndicatorElement = document.getElementById(
+      CONSTANTS.HUD_ELEMENTS.POWERUP_INDICATOR
+    );
   }
 
   /**
@@ -104,6 +110,25 @@ class HUDManager {
     if (stage !== this._lastStage) {
       this.updateStage(stage);
       this._lastStage = stage;
+    }
+
+    // Power-up activo
+    const activeLabel = gameState.getActivePowerupLabel();
+    if (activeLabel) {
+      const secs = gameState.getDashRemainingSeconds();
+      const rounded = Math.max(0, Math.ceil(secs * 10) / 10); // 1 decimal hacia arriba
+      if (
+        activeLabel !== this._lastPowerupLabel ||
+        rounded !== this._lastPowerupSecs
+      ) {
+        this.showPowerupIndicator(`${activeLabel} ${rounded.toFixed(1)}s`);
+        this._lastPowerupLabel = activeLabel;
+        this._lastPowerupSecs = rounded;
+      }
+    } else if (this._lastPowerupLabel) {
+      this.hidePowerupIndicator();
+      this._lastPowerupLabel = null;
+      this._lastPowerupSecs = null;
     }
   }
 
@@ -302,6 +327,7 @@ class HUDManager {
     this.gameOverScreenElement = null;
     this.finalScoreElement = null;
     this.finalBatteriesElement = null;
+    this.powerupIndicatorElement = null;
   }
 
   /**
@@ -311,5 +337,21 @@ class HUDManager {
     const btn = document.getElementById("pause-button");
     if (!btn) return;
     btn.style.display = visible ? "flex" : "none";
+  }
+
+  /**
+   * Muestra/actualiza el indicador de power-up
+   */
+  showPowerupIndicator(text) {
+    if (!this.powerupIndicatorElement) return;
+    this.powerupIndicatorElement.textContent = `⚡ ${text}`;
+    this.powerupIndicatorElement.classList.remove("hidden");
+    this.powerupIndicatorElement.classList.add("show");
+  }
+
+  hidePowerupIndicator() {
+    if (!this.powerupIndicatorElement) return;
+    this.powerupIndicatorElement.classList.remove("show");
+    this.powerupIndicatorElement.classList.add("hidden");
   }
 }

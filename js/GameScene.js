@@ -46,6 +46,13 @@ class GameScene extends Phaser.Scene {
 
     // Generar todas las texturas proceduralmente
     this.textureGenerator.generateAllTextures();
+
+    // Cargar música (formato OGG)
+    this.load.audio(CONSTANTS.AUDIO.BGM_MAIN, ["assets/music/musica.ogg"]);
+    // Cargar efecto de sonido para recogida de objetos
+    this.load.audio(CONSTANTS.AUDIO.SFX_PICKUP, [
+      "assets/sound/objetc-sound.wav",
+    ]);
   }
 
   create() {
@@ -110,6 +117,16 @@ class GameScene extends Phaser.Scene {
     // Mostrar pantalla de inicio
     this.hudManager.showStartScreen();
     if (CONSTANTS.DEBUG) console.log("✅ GameScene created successfully");
+
+    // Preparar BGM (no reproducir hasta interacción del usuario por restricciones de autoplay)
+    this.bgm = this.sound.add(CONSTANTS.AUDIO.BGM_MAIN, {
+      loop: true,
+      volume: this.getPreferredMusicVolume(),
+    });
+    // Preparar SFX de recogida (se reproduce bajo demanda)
+    this.sfxPickup = this.sound.add(CONSTANTS.AUDIO.SFX_PICKUP, {
+      volume: this.getPreferredSfxVolume(),
+    });
   }
 
   /**
@@ -167,7 +184,7 @@ class GameScene extends Phaser.Scene {
     this.physicsManager.addOverlap(
       this.player.getSprite(),
       this.obstacleManager.getBatteryGroup(),
-      this.handleBatteryOverlap,
+      this.handleCollectibleOverlap,
       this
     );
   }
@@ -212,6 +229,18 @@ class GameScene extends Phaser.Scene {
     this.hudManager.hideStartScreen();
     this.hudManager.showHUD();
     if (CONSTANTS.DEBUG) console.log("✅ Game started");
+
+    // Iniciar música tras interacción del usuario
+    if (this.bgm && !this.bgm.isPlaying) {
+      // Pequeño fade-in
+      const targetVol = this.getPreferredMusicVolume();
+      this.bgm.play({ volume: 0 });
+      this.tweens.add({
+        targets: this.bgm,
+        volume: targetVol,
+        duration: CONSTANTS.AUDIO_CONFIG.FADE_DURATION_MS,
+      });
+    }
   }
 
   togglePause() {
@@ -233,6 +262,11 @@ class GameScene extends Phaser.Scene {
       this.scene.pause("EscenaIndustrial");
     }
     this.hudManager.showPauseScreen();
+
+    // Pausar música
+    if (this.bgm && this.bgm.isPlaying) {
+      this.bgm.pause();
+    }
   }
 
   resumeGame() {
@@ -246,6 +280,11 @@ class GameScene extends Phaser.Scene {
       this.scene.resume("EscenaIndustrial");
     }
     this.hudManager.hidePauseScreen();
+
+    // Reanudar música
+    if (this.bgm && this.bgm.isPaused) {
+      this.bgm.resume();
+    }
   }
 
   restartGame() {
@@ -279,6 +318,11 @@ class GameScene extends Phaser.Scene {
     this.physicsManager.resumePhysics();
 
     if (CONSTANTS.DEBUG) console.log("✅ Game restarted");
+
+    // Asegurar música en reproducción
+    if (this.bgm && !this.bgm.isPlaying) {
+      this.bgm.play({ volume: this.getPreferredMusicVolume() });
+    }
   }
 
   /**
@@ -299,6 +343,11 @@ class GameScene extends Phaser.Scene {
     // Mostrar pantalla de inicio
     this.hudManager.hideGameOverScreen();
     this.hudManager.showStartScreen();
+
+    // Detener música al volver al menú
+    if (this.bgm && this.bgm.isPlaying) {
+      this.bgm.stop();
+    }
   }
 
   handleObstacleCollision(player, obstacle) {
@@ -307,14 +356,29 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  handleBatteryOverlap(player, battery) {
-    if (this.gameState.isGameActive()) {
-      // Recolectar batería
-      this.obstacleManager.removeObstacle(battery.getData("ref"));
-      this.gameState.addBattery();
+  handleCollectibleOverlap(player, itemSprite) {
+    if (!this.gameState.isGameActive()) return;
+    const type = itemSprite.getData("type");
+    // Eliminar el item del mundo
+    this.obstacleManager.removeObstacle(itemSprite.getData("ref"));
 
-      // Actualizar UI
+    if (type === "battery") {
+      this.gameState.addBattery();
       this.hudManager.updateBatteryCount(this.gameState.getBatteryCount());
+      this.playPickupSfx();
+    } else if (type === CONSTANTS.POWERUPS.DASH.KEY) {
+      // Activar dash temporal
+      this.gameState.activateDash(
+        CONSTANTS.POWERUPS.DASH.DURATION_MS,
+        CONSTANTS.POWERUPS.DASH.SPEED_BOOST
+      );
+      // Feedback ligero opcional: tintar al jugador
+      const spr = this.player.getSprite();
+      spr.setTint(0x8bc4ff);
+      this.time.delayedCall(CONSTANTS.POWERUPS.DASH.DURATION_MS, () => {
+        if (spr && spr.clearTint) spr.clearTint();
+      });
+      this.playPickupSfx();
     }
   }
 
@@ -328,6 +392,18 @@ class GameScene extends Phaser.Scene {
       this.gameState.getScore(),
       this.gameState.getBatteryCount()
     );
+
+    // Fade-out y stop de música en fin del juego
+    if (this.bgm && this.bgm.isPlaying) {
+      const target = { vol: this.bgm.volume };
+      this.tweens.add({
+        targets: target,
+        vol: 0,
+        duration: CONSTANTS.AUDIO_CONFIG.FADE_DURATION_MS,
+        onUpdate: () => this.bgm.setVolume(target.vol),
+        onComplete: () => this.bgm.stop(),
+      });
+    }
   }
 
   update(time, delta) {
@@ -349,6 +425,9 @@ class GameScene extends Phaser.Scene {
         this.gameState.getGameSpeed(),
         deltaSeconds
       );
+
+      // Actualizar power-ups temporales
+      this.gameState.tickDash(delta);
 
       // Actualizar estado del juego
       this.gameState.incrementScore(deltaSeconds);
@@ -384,5 +463,45 @@ class GameScene extends Phaser.Scene {
     this.gameState = null;
     this.player = null;
     this.obstacleManager = null;
+
+    // Destruir música
+    if (this.bgm) {
+      try {
+        this.bgm.destroy();
+      } catch (e) {}
+      this.bgm = null;
+    }
+  }
+
+  // Preferencias de audio
+  getPreferredMusicVolume() {
+    const saved = window.localStorage?.getItem("xr9_music_volume");
+    if (saved !== null) {
+      const v = parseFloat(saved);
+      if (!isNaN(v)) return Math.max(0, Math.min(1, v / 100));
+    }
+    return CONSTANTS.AUDIO_CONFIG.MUSIC_VOLUME;
+  }
+
+  getPreferredSfxVolume() {
+    const saved = window.localStorage?.getItem("xr9_sfx_volume");
+    if (saved !== null) {
+      const v = parseFloat(saved);
+      if (!isNaN(v)) return Math.max(0, Math.min(1, v / 100));
+    }
+    return CONSTANTS.AUDIO_CONFIG.SFX_VOLUME;
+  }
+
+  playPickupSfx() {
+    if (this.sfxPickup) {
+      // Actualizar volumen al valor preferido antes de reproducir
+      this.sfxPickup.setVolume(this.getPreferredSfxVolume());
+      this.sfxPickup.play();
+    } else {
+      // Fallback rápido por si no se creó la instancia
+      this.sound.play(CONSTANTS.AUDIO.SFX_PICKUP, {
+        volume: this.getPreferredSfxVolume(),
+      });
+    }
   }
 }

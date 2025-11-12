@@ -81,17 +81,35 @@ class Player {
   isOnGround() {
     const body = this.sprite.body;
     if (!body) return false;
-
-    // Verificar múltiples condiciones para detección más robusta
+    // Métodos nativos y flags
     const blocked = body.blocked && body.blocked.down;
     const touching = body.touching && body.touching.down;
     const onFloor = typeof body.onFloor === "function" ? body.onFloor() : false;
 
-    // También verificar si está muy cerca del suelo (tolerancia para pequeños errores de float)
-    const groundLevel = CONSTANTS.GAME_POSITIONS.GROUND_Y;
-    const nearGround = Math.abs(this.sprite.y + body.height - groundLevel) < 5;
+    if (blocked || touching || onFloor) return true;
 
-    return blocked || touching || onFloor || nearGround;
+    // Detección adicional: comparar la parte inferior del body con el collider del suelo más cercano
+    // Usamos un pequeño margen para permitir variaciones de frame (subpixel jitter)
+    const groundGroup = this.scene.physicsManager?.getGroundGroup?.();
+    if (groundGroup && groundGroup.getChildren) {
+      const margin = 6; // tolerancia vertical
+      const bottomY = body.bottom; // posición y inferior actual del jugador
+      const children = groundGroup.getChildren();
+      for (let i = 0; i < children.length; i++) {
+        const seg = children[i];
+        if (seg?.body) {
+          const segTop = seg.body.top;
+          const segLeft = seg.body.left;
+          const segRight = seg.body.right;
+          // Solo si estamos horizontalmente dentro del rango del segmento
+          const withinX = body.right > segLeft && body.left < segRight;
+          if (withinX && Math.abs(bottomY - segTop) <= margin) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   /**

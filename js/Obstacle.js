@@ -32,6 +32,7 @@ class Obstacle {
     // Behavior flags
     this.collectible = !!config.collectible;
     this._isBattery = !!config.isBattery;
+    this._isDash = !!config.isDash;
     this.rotating = !!config.rotating;
     this.rotSpeed = config.rotSpeed || 0;
     this.bobAmplitude = config.bobAmplitude || 0;
@@ -42,6 +43,7 @@ class Obstacle {
     this.sprite.setData("type", type);
     this.sprite.setData("collectible", this.collectible);
     this.sprite.setData("ref", this);
+    if (this._isDash) this.sprite.setData("dash", true);
 
     this.minGap = config.minGap;
     this._destroyed = false;
@@ -91,6 +93,10 @@ class Obstacle {
 
   isBattery() {
     return this._isBattery;
+  }
+
+  isDash() {
+    return this._isDash;
   }
 
   update(deltaSeconds) {

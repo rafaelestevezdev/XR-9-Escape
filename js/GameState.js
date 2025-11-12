@@ -24,6 +24,11 @@ class GameState {
     this.lastDifficultyIncrease = 0;
     this.hasPlayerInteracted = false;
     this.difficultyLevel = CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY;
+
+    // Power-ups
+    this.dashActive = false;
+    this.dashRemainingMs = 0;
+    this.dashSpeedBonus = 0;
   }
 
   /**
@@ -135,6 +140,46 @@ class GameState {
   }
 
   /**
+   * Activa el power-up de DASH por una duración dada
+   */
+  activateDash(
+    durationMs = CONSTANTS.POWERUPS.DASH.DURATION_MS,
+    speedBoost = CONSTANTS.POWERUPS.DASH.SPEED_BOOST
+  ) {
+    this.dashActive = true;
+    this.dashRemainingMs = durationMs;
+    this.dashSpeedBonus = speedBoost;
+  }
+
+  /**
+   * Actualiza el temporizador del DASH
+   */
+  tickDash(deltaMs) {
+    if (!this.dashActive) return;
+    this.dashRemainingMs = Math.max(0, this.dashRemainingMs - deltaMs);
+    if (this.dashRemainingMs <= 0) {
+      this.dashActive = false;
+      this.dashSpeedBonus = 0;
+    }
+  }
+
+  isDashActive() {
+    return this.dashActive;
+  }
+
+  getDashRemainingMs() {
+    return this.dashRemainingMs;
+  }
+
+  getDashRemainingSeconds() {
+    return Math.max(0, this.dashRemainingMs / 1000);
+  }
+
+  getActivePowerupLabel() {
+    return this.dashActive ? CONSTANTS.POWERUPS.DASH.HUD_LABEL : null;
+  }
+
+  /**
    * Incrementa el nivel de dificultad
    */
   increaseDifficulty() {
@@ -189,6 +234,12 @@ class GameState {
    * Obtiene la velocidad actual
    */
   getGameSpeed() {
+    // Aplicar bonificación temporal si hay dash activo
+    if (this.dashActive) {
+      const maxWithBoost =
+        CONSTANTS.GAME_INITIAL_STATE.MAX_SPEED + this.dashSpeedBonus;
+      return Math.min(this.gameSpeed + this.dashSpeedBonus, maxWithBoost);
+    }
     return this.gameSpeed;
   }
 

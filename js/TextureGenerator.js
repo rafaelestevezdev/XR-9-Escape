@@ -277,6 +277,7 @@ class TextureGenerator {
    */
   generateCollectibleTextures() {
     this.generateBatteryTexture();
+    this.generateDashTexture();
   }
 
   /**
@@ -316,6 +317,40 @@ class TextureGenerator {
     g.fillRect(BAT_W / 2 - 2, 14, 4, 8);
 
     g.generateTexture(CONSTANTS.TEXTURE_KEYS.BATTERY, BAT_W, BAT_H);
+    g.clear();
+  }
+
+  /**
+   * Genera la textura del power-up DASH (rayo/chevron)
+   */
+  generateDashTexture() {
+    const g = this.scene.make.graphics({ x: 0, y: 0, add: false });
+    const W = 28,
+      H = 28;
+
+    // Fondo circular tenue para halo
+    g.fillStyle(CONSTANTS.COLORS.LIGHT_GLOW_OUTER, 0.25);
+    g.fillCircle(W / 2, H / 2, 12);
+    g.fillStyle(CONSTANTS.COLORS.LIGHT_GLOW_INNER, 0.35);
+    g.fillCircle(W / 2, H / 2, 9);
+
+    // Rayo estilizado
+    g.fillStyle(CONSTANTS.COLORS.LIGHT_CYAN, 1);
+    g.beginPath();
+    g.moveTo(14, 3);
+    g.lineTo(9, 14);
+    g.lineTo(14, 14);
+    g.lineTo(12, 25);
+    g.lineTo(19, 12);
+    g.lineTo(14, 12);
+    g.closePath();
+    g.fillPath();
+
+    // Borde/acento
+    g.lineStyle(2, CONSTANTS.COLORS.LIGHT_CYAN_SOFT, 1);
+    g.strokePath();
+
+    g.generateTexture(CONSTANTS.TEXTURE_KEYS.DASH, W, H);
     g.clear();
   }
 }
