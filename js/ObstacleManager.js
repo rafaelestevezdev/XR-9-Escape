@@ -26,6 +26,7 @@ class ObstacleManager {
     this.speed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
     this.obstacleTypes = CONSTANTS.OBSTACLE_MANAGER_CONFIG.TYPES;
     this.difficultyLevel = CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY;
+    this.spawningEnabled = true; // permitir pausar spawns durante eventos (p.ej., dron)
   }
 
   /**
@@ -57,7 +58,10 @@ class ObstacleManager {
     });
 
     // Crear nuevos obstáculos
-    if (currentTime - this.lastSpawnTime > this.nextSpawnDelay) {
+    if (
+      this.spawningEnabled &&
+      currentTime - this.lastSpawnTime > this.nextSpawnDelay
+    ) {
       const obstacle = this.spawn();
       this.lastSpawnTime = currentTime;
       const baseDelay = Phaser.Math.Between(
@@ -84,6 +88,25 @@ class ObstacleManager {
       this.speed
     );
     this.obstacles.push(obstacle);
+    return obstacle;
+  }
+
+  forceSpawn(type = "battery") {
+    const cfg = CONSTANTS.OBSTACLE_CONFIG[type] || {};
+    const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
+    const obstacle = new Obstacle(
+      this.scene,
+      targetGroup,
+      CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
+      type,
+      this.speed
+    );
+    this.obstacles.push(obstacle);
+    this.lastSpawnTime = this.scene.time.now;
+    this.nextSpawnDelay = Phaser.Math.Between(
+      this.spawnWindow.min,
+      this.spawnWindow.max
+    );
     return obstacle;
   }
 
@@ -140,7 +163,35 @@ class ObstacleManager {
     this.lastSpawnTime = this.scene.time.now;
     this.speed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
     this.difficultyLevel = CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY;
+    this.spawningEnabled = true;
     if (CONSTANTS.DEBUG) console.log("✅ ObstacleManager reset complete");
+  }
+
+  /**
+   * Habilitar/Deshabilitar la creación de nuevos obstáculos
+   */
+  setSpawningEnabled(enabled) {
+    this.spawningEnabled = !!enabled;
+  }
+
+  /**
+   * Eliminar todos los obstáculos y coleccionables activos inmediatamente
+   */
+  clearAllObstacles() {
+    this.group.clear(true, true);
+    this.batteryGroup.clear(true, true);
+    this.obstacles.forEach((o) => {
+      try {
+        o.destroy();
+      } catch (e) {}
+    });
+    this.obstacles = [];
+    // Reiniciar la ventana de spawn para evitar aparición inmediata al reactivar
+    this.lastSpawnTime = this.scene.time.now;
+    this.nextSpawnDelay = Phaser.Math.Between(
+      this.spawnWindow.min,
+      this.spawnWindow.max
+    );
   }
 
   /**

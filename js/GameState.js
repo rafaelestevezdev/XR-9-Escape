@@ -16,8 +16,8 @@ class GameState {
     this.batteries = CONSTANTS.GAME_INITIAL_STATE.BATTERIES;
     this.energy = 100; // Energía inicial al 100%
     this.maxEnergy = 100;
-    this.energyDrainRate = 8; // Unidades por segundo - drenaje gradual
-    this.energyRechargeAmount = 25; // Energía que da cada batería
+    this.energyDrainRate = 5.5; // Unidades por segundo - drenaje gradual
+    this.energyRechargeAmount = 30; // Energía que da cada batería
     this.gameSpeed = CONSTANTS.GAME_INITIAL_STATE.SPEED;
     this.gameOver = CONSTANTS.GAME_INITIAL_STATE.GAME_OVER;
     this.gamePaused = CONSTANTS.GAME_INITIAL_STATE.GAME_PAUSED;

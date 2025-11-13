@@ -22,6 +22,7 @@ class GameScene extends Phaser.Scene {
     // Inicializar objetos del juego
     this.player = null;
     this.obstacleManager = null;
+    this.laserDroneManager = null;
     if (CONSTANTS.DEBUG) console.log("✅ All managers initialized");
   }
 
@@ -103,6 +104,7 @@ class GameScene extends Phaser.Scene {
     this.backgroundManager.create();
     this.createPlayer();
     this.createObstacleManager();
+    this.createLaserDroneManager();
 
     // Inicializar managers
     this.inputManager.initialize();
@@ -127,6 +129,15 @@ class GameScene extends Phaser.Scene {
     this.sfxPickup = this.sound.add(CONSTANTS.AUDIO.SFX_PICKUP, {
       volume: this.getPreferredSfxVolume(),
     });
+  }
+
+  createLaserDroneManager() {
+    this.laserDroneManager = new LaserDroneManager(
+      this,
+      this.gameState,
+      this.player,
+      this.obstacleManager
+    );
   }
 
   /**
@@ -187,6 +198,17 @@ class GameScene extends Phaser.Scene {
       this.handleCollectibleOverlap,
       this
     );
+
+    // Overlap entre jugador y rayos láser (dron)
+    // Se configura aunque el dron no exista aún; el manager crea su grupo
+    if (this.laserDroneManager) {
+      this.physicsManager.addOverlap(
+        this.player.getSprite(),
+        this.laserDroneManager.getLaserGroup(),
+        this.handleLaserHit,
+        this
+      );
+    }
   }
 
   setupInputEvents() {
@@ -243,6 +265,12 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  handleLaserHit(player, laserSprite) {
+    if (this.gameState.isGameActive()) {
+      this.endGame();
+    }
+  }
+
   togglePause() {
     if (this.gameState.isGamePaused()) {
       this.resumeGame();
@@ -292,6 +320,7 @@ class GameScene extends Phaser.Scene {
 
     // Ocultar pantalla de game over
     this.hudManager.hideGameOverScreen();
+    this.hudManager.hideStartScreen();
 
     // Resetear estado
     this.gameState.reset();
@@ -299,6 +328,9 @@ class GameScene extends Phaser.Scene {
     // Resetear objetos del juego
     this.player.reset();
     this.obstacleManager.reset();
+    if (this.laserDroneManager) {
+      this.laserDroneManager.reset();
+    }
 
     // Actualizar HUD sin mostrar pantalla de inicio
     this.hudManager.updateScore(0);
@@ -426,6 +458,15 @@ class GameScene extends Phaser.Scene {
         deltaSeconds
       );
 
+      // Actualizar dron láser
+      if (this.laserDroneManager) {
+        this.laserDroneManager.update(
+          time,
+          this.gameState.getGameSpeed(),
+          deltaSeconds
+        );
+      }
+
       // Actualizar power-ups temporales
       this.gameState.tickDash(delta);
 
@@ -458,11 +499,13 @@ class GameScene extends Phaser.Scene {
     // Destruir objetos del juego
     if (this.player) this.player.destroy();
     if (this.obstacleManager) this.obstacleManager.destroy();
+    if (this.laserDroneManager) this.laserDroneManager.destroy();
 
     // Limpiar referencias
     this.gameState = null;
     this.player = null;
     this.obstacleManager = null;
+    this.laserDroneManager = null;
 
     // Destruir música
     if (this.bgm) {
