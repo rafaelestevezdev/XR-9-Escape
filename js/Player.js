@@ -34,7 +34,9 @@ class Player {
       this.sprite.setVelocityY(CONSTANTS.PLAYER_CONFIG.JUMP_VELOCITY);
       // Reproducir animación de salto
       this.sprite.play("robot-jump");
+      return true; // Salto exitoso
     }
+    return false; // No se pudo saltar
   }
 
   /**

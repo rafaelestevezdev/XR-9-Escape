@@ -2,10 +2,11 @@
  * LaserDrone - Dron que entra desde la derecha, se posiciona y dispara rayos a ras del suelo
  */
 class LaserDrone {
-  constructor(scene, player, laserGroup) {
+  constructor(scene, player, laserGroup, sfxLaserShoot) {
     this.scene = scene;
     this.player = player;
     this.laserGroup = laserGroup;
+    this.sfxLaserShoot = sfxLaserShoot;
 
     this.state = "entering"; // entering -> firing -> leaving
     this.enterX = CONSTANTS.GAME_CONFIG.WIDTH + 60;
@@ -195,6 +196,11 @@ class LaserDrone {
 
     laser.setData("type", "laser");
     this.laserGroup.add(laser);
+
+    // Reproducir sonido de disparo láser
+    if (this.sfxLaserShoot) {
+      this.sfxLaserShoot.play();
+    }
 
     // animación de disparo: destello y vibración del proyectil
     laser.setScale(1.1, 0.8);

@@ -57,9 +57,20 @@
         <!-- Power-up indicator (centrado arriba) -->
         <div id="powerup-indicator" class="powerup-indicator hidden" aria-live="polite" aria-atomic="true"></div>
 
+        <!-- Intro Overlay (Click to Start) -->
+        <div id="intro-overlay" onclick="initializeAudioContext()">
+          <div class="intro-text">CLICK TO INITIALIZE SYSTEM</div>
+        </div>
+
+        <!-- Transition Overlay (Menu -> Game) -->
+        <div id="transition-overlay" class="transition-overlay">
+          <div class="transition-text">INITIATING SEQUENCE...</div>
+          <div class="loading-bar"><div class="loading-progress"></div></div>
+        </div>
+
         <!-- Include: html/start-screen.html -->
         <div id="start-screen" class="start-panel">
-          <button class="help-btn" onclick="showControls()">
+          <button class="help-btn" onclick="playButtonSound(); showControls()">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
           </svg>
@@ -67,11 +78,19 @@
           <div class="start-title">XR-9</div>
           <div class="start-subtitle">ESCAPE</div>
           <div class="start-tagline">// CORREDOR DE FABRICA //</div>
-          <button class="start-btn" onclick="startGame()">INICIAR JUEGO</button>
-          <button class="config-btn" onclick="showConfig()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <button class="start-btn" onclick="playButtonSound(); startGame()">INICIAR JUEGO</button>
+          <button class="config-btn" onclick="playButtonSound(); showConfig()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
           </svg>
+          </button>
+          <button id="mute-btn" class="mute-btn" onclick="toggleMenuMusic()">
+            <svg id="icon-sound-on" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+            </svg>
+            <svg id="icon-sound-off" class="hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+            </svg>
           </button>
           <p class="developer">Desarrollado por: <span class="developer-name">@rafaelestevezdev</span></p>
         </div>
@@ -92,8 +111,8 @@
             BATERIAS <span id="final-batteries">0</span>
           </div>
           <div class="game-over-buttons">
-            <button class="restart-btn" onclick="restartGame()">REINICIAR</button>
-            <button class="menu-btn" onclick="returnToMenu()">MENÚ PRINCIPAL</button>
+            <button class="restart-btn" onclick="playButtonSound(); restartGame()">REINICIAR</button>
+            <button class="menu-btn" onclick="playButtonSound(); returnToMenu()">MENÚ PRINCIPAL</button>
           </div>
         </div>
 
@@ -132,7 +151,7 @@
               </div>
               <p class="config-hint">Ajusta el volumen de los efectos (recoger objetos, etc).</p>
             </div>
-            <button class="modal-close-btn" onclick="closeModal()">CERRAR</button>
+            <button class="modal-close-btn" onclick="playButtonSound(); closeModal()">CERRAR</button>
           </div>
         </div>
 
@@ -143,11 +162,68 @@
             <p>SALTAR: ESPACIO / ARRIBA / TOCAR</p>
             <h2>OBJETIVO</h2>
             <p>RECOLECTA ⚡ Y EVITA OBSTACULOS</p>
-            <button class="modal-close-btn" onclick="closeModal()">CERRAR</button>
+            <button class="modal-close-btn" onclick="playButtonSound(); closeModal()">CERRAR</button>
           </div>
         </div>
     </div>
     <script>
+      // Button Sound Effect
+      const buttonSound = new Audio('assets/sound/sonido_boton.mp3');
+      buttonSound.volume = 0.5;
+
+      function playButtonSound() {
+        buttonSound.currentTime = 0;
+        buttonSound.play().catch(e => console.log("Audio play failed", e));
+      }
+
+      // Menu Music
+      window.menuMusic = new Audio('assets/music/music_menu.mp3');
+      window.menuMusic.loop = true;
+      window.isMenuMusicPlaying = false;
+      window.isMuted = false;
+
+      // Función explícita para inicializar audio (llamada desde el overlay)
+      function initializeAudioContext() {
+        const overlay = document.getElementById('intro-overlay');
+        
+        // Reproducir música
+        if (!window.isMuted) {
+          window.menuMusic.play().then(() => {
+            window.isMenuMusicPlaying = true;
+            // Ocultar overlay solo si el audio inicia correctamente
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.style.display = 'none', 500);
+          }).catch(e => {
+            console.log("Audio init failed", e);
+            // Ocultar de todos modos para no bloquear al usuario
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.style.display = 'none', 500);
+          });
+        } else {
+          overlay.classList.add('fade-out');
+          setTimeout(() => overlay.style.display = 'none', 500);
+        }
+      }
+
+      function toggleMenuMusic() {
+        const onIcon = document.getElementById('icon-sound-on');
+        const offIcon = document.getElementById('icon-sound-off');
+        
+        window.isMuted = !window.isMuted;
+        
+        if (window.isMuted) {
+          window.menuMusic.pause();
+          window.isMenuMusicPlaying = false;
+          onIcon.classList.add('hidden');
+          offIcon.classList.remove('hidden');
+        } else {
+          window.menuMusic.play();
+          window.isMenuMusicPlaying = true;
+          onIcon.classList.remove('hidden');
+          offIcon.classList.add('hidden');
+        }
+      }
+
       function showConfig() {
         document.getElementById('config-modal').classList.add('show');
       }
@@ -160,10 +236,16 @@
 
       // Audio slider logic - Funciones globales
       window.applyMusicVolume = function(percent) {
-        const scene = window.getGameInstance?.().scene.getScene('GameScene');
-        if (!scene || !scene.bgm) return;
         const vol = Math.max(0, Math.min(1, percent / 100));
-        scene.bgm.setVolume(vol);
+        
+        // Aplicar a música del menú
+        if (window.menuMusic) window.menuMusic.volume = vol;
+
+        // Aplicar a música del juego (Phaser)
+        const scene = window.getGameInstance?.().scene.getScene('GameScene');
+        if (scene && scene.bgm) {
+          scene.bgm.setVolume(vol);
+        }
       };
 
       window.applySfxVolume = function(percent) {

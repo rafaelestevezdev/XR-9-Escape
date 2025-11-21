@@ -3,11 +3,12 @@
  * Pausa los obstáculos mientras el dron está activo
  */
 class LaserDroneManager {
-  constructor(scene, gameState, player, obstacleManager) {
+  constructor(scene, gameState, player, obstacleManager, sfxLaserShoot) {
     this.scene = scene;
     this.gameState = gameState;
     this.player = player;
     this.obstacleManager = obstacleManager;
+    this.sfxLaserShoot = sfxLaserShoot;
 
     this.laserGroup = scene.physics.add.group({
       allowGravity: false,
@@ -31,7 +32,12 @@ class LaserDroneManager {
 
   spawnDrone() {
     if (this.activeDrone) return;
-    this.activeDrone = new LaserDrone(this.scene, this.player, this.laserGroup);
+    this.activeDrone = new LaserDrone(
+      this.scene,
+      this.player,
+      this.laserGroup,
+      this.sfxLaserShoot
+    );
     this.active = true;
     // Pausar spawns y limpiar obstáculos existentes
     if (this.obstacleManager) {

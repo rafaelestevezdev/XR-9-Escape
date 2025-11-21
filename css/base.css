@@ -38,6 +38,25 @@ body {
   letter-spacing: 0.08em;
   overflow-x: hidden;
   position: relative;
+
+  /* Custom Default Cursor (Hand) */
+  cursor: url("../assets/cursor/Arrow.png?v=2"), auto;
+}
+
+/* Custom Pointer Cursor (Hand Pointer) */
+a,
+button,
+input,
+select,
+textarea,
+[role="button"],
+.pointer {
+  cursor: url("../assets/cursor/Hand_pointer.png"), pointer !important;
+}
+
+/* Game Screen Cursor (Crosshair) */
+.cabinet-screen {
+  cursor: url("../assets/cursor/Arrow.png?v=2"), auto !important;
 }
 
 /* Fondo arcade mejorado con cuadrícula más visible */

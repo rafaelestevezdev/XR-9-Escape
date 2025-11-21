@@ -277,6 +277,9 @@ const POWERUPS = {
 const AUDIO = {
   BGM_MAIN: "bgm_main",
   SFX_PICKUP: "sfx_pickup",
+  SFX_GAMEOVER: "sfx_gameover",
+  SFX_JUMP: "sfx_jump",
+  SFX_LASER_SHOOT: "sfx_laser_shoot",
 };
 
 const AUDIO_CONFIG = {

@@ -81,11 +81,44 @@ function destroyGame() {
 // Funciones de interfaz para el DOM (mantenidas por compatibilidad)
 function startGame() {
   if (CONSTANTS.DEBUG) console.log("▶️ startGame() called from main.js");
-  const scene = gameInstance?.scene.getScene("GameScene");
-  if (scene && !gameStarted) {
-    gameStarted = true;
-    scene.startGame();
+
+  // 1. Mostrar overlay de transición
+  const transitionOverlay = document.getElementById("transition-overlay");
+  if (transitionOverlay) {
+    transitionOverlay.classList.add("active");
   }
+
+  // 2. Fade out música del menú (si existe)
+  if (window.menuMusic && window.isMenuMusicPlaying) {
+    const fadeAudio = setInterval(() => {
+      if (window.menuMusic.volume > 0.05) {
+        window.menuMusic.volume -= 0.05;
+      } else {
+        window.menuMusic.pause();
+        window.menuMusic.volume = localStorage.getItem("xr9_music_volume")
+          ? parseInt(localStorage.getItem("xr9_music_volume")) / 100
+          : 0.45; // Restaurar volumen original
+        window.isMenuMusicPlaying = false;
+        clearInterval(fadeAudio);
+      }
+    }, 100); // Fade out más lento (aprox 900ms) para coincidir con la transición
+  }
+
+  // 3. Esperar 1 segundo antes de iniciar realmente el juego
+  setTimeout(() => {
+    const scene = gameInstance?.scene.getScene("GameScene");
+    if (scene && !gameStarted) {
+      gameStarted = true;
+      scene.startGame();
+
+      // Ocultar overlay después de iniciar
+      if (transitionOverlay) {
+        setTimeout(() => {
+          transitionOverlay.classList.remove("active");
+        }, 500);
+      }
+    }
+  }, 1000);
 }
 
 function restartGame() {
@@ -100,6 +133,16 @@ function restartGame() {
 function returnToMenu() {
   if (CONSTANTS.DEBUG) console.log("🏠 returnToMenu() called from main.js");
   gameStarted = false;
+
+  // Reiniciar música del menú si no está muteada
+  if (window.menuMusic && !window.isMuted) {
+    window.menuMusic.currentTime = 0;
+    window.menuMusic
+      .play()
+      .catch((e) => console.log("Menu music play failed", e));
+    window.isMenuMusicPlaying = true;
+  }
+
   const scene = gameInstance?.scene.getScene("GameScene");
   if (scene) {
     scene.returnToMenu();

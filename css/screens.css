@@ -136,3 +136,95 @@
     opacity: 0.85;
   }
 }
+
+/* Intro Overlay (Click to Start) */
+#intro-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.5s ease;
+}
+
+#intro-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-text {
+  color: var(--panel-edge);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Transition Overlay (Menu -> Game) */
+.transition-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.transition-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.transition-text {
+  color: var(--accent);
+  font-size: 16px;
+  letter-spacing: 0.25em;
+  text-shadow: 0 0 10px var(--accent);
+}
+
+.loading-bar {
+  width: 200px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--panel-edge);
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--panel-edge);
+  width: 0%;
+  box-shadow: 0 0 10px var(--panel-edge);
+}
+
+.transition-overlay.active .loading-progress {
+  animation: loadProgress 1s ease-in-out forwards;
+}
+
+@keyframes loadProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}

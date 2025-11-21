@@ -54,6 +54,16 @@ class GameScene extends Phaser.Scene {
     this.load.audio(CONSTANTS.AUDIO.SFX_PICKUP, [
       "assets/sound/objetc-sound.wav",
     ]);
+    // Cargar efecto de sonido de Game Over
+    this.load.audio(CONSTANTS.AUDIO.SFX_GAMEOVER, [
+      "assets/sound/sonido_pierde.mp3",
+    ]);
+    // Cargar efecto de sonido de Salto
+    this.load.audio(CONSTANTS.AUDIO.SFX_JUMP, ["assets/sound/Jump_sound.mp3"]);
+    // Cargar efecto de sonido de Disparo Láser
+    this.load.audio(CONSTANTS.AUDIO.SFX_LASER_SHOOT, [
+      "assets/sound/Shoot.wav",
+    ]);
   }
 
   create() {
@@ -100,7 +110,30 @@ class GameScene extends Phaser.Scene {
     this.physicsManager.setupWorldPhysics();
     this.physicsManager.createGround();
 
-    // Crear elementos del juego
+    // Preparar todos los sonidos ANTES de crear los objetos del juego
+    // (no reproducir música hasta interacción del usuario por restricciones de autoplay)
+    this.bgm = this.sound.add(CONSTANTS.AUDIO.BGM_MAIN, {
+      loop: true,
+      volume: this.getPreferredMusicVolume(),
+    });
+    // Preparar SFX de recogida (se reproduce bajo demanda)
+    this.sfxPickup = this.sound.add(CONSTANTS.AUDIO.SFX_PICKUP, {
+      volume: this.getPreferredSfxVolume(),
+    });
+    // Preparar SFX de Game Over
+    this.sfxGameOver = this.sound.add(CONSTANTS.AUDIO.SFX_GAMEOVER, {
+      volume: this.getPreferredSfxVolume(),
+    });
+    // Preparar SFX de Salto
+    this.sfxJump = this.sound.add(CONSTANTS.AUDIO.SFX_JUMP, {
+      volume: this.getPreferredSfxVolume(),
+    });
+    // Preparar SFX de Disparo Láser
+    this.sfxLaserShoot = this.sound.add(CONSTANTS.AUDIO.SFX_LASER_SHOOT, {
+      volume: this.getPreferredSfxVolume(),
+    });
+
+    // Crear elementos del juego (ahora los sonidos ya están disponibles)
     this.backgroundManager.create();
     this.createPlayer();
     this.createObstacleManager();
@@ -119,16 +152,6 @@ class GameScene extends Phaser.Scene {
     // Mostrar pantalla de inicio
     this.hudManager.showStartScreen();
     if (CONSTANTS.DEBUG) console.log("✅ GameScene created successfully");
-
-    // Preparar BGM (no reproducir hasta interacción del usuario por restricciones de autoplay)
-    this.bgm = this.sound.add(CONSTANTS.AUDIO.BGM_MAIN, {
-      loop: true,
-      volume: this.getPreferredMusicVolume(),
-    });
-    // Preparar SFX de recogida (se reproduce bajo demanda)
-    this.sfxPickup = this.sound.add(CONSTANTS.AUDIO.SFX_PICKUP, {
-      volume: this.getPreferredSfxVolume(),
-    });
   }
 
   createLaserDroneManager() {
@@ -136,7 +159,8 @@ class GameScene extends Phaser.Scene {
       this,
       this.gameState,
       this.player,
-      this.obstacleManager
+      this.obstacleManager,
+      this.sfxLaserShoot
     );
   }
 
@@ -222,7 +246,13 @@ class GameScene extends Phaser.Scene {
     // Evento para saltar
     this.inputManager.onJump(() => {
       if (!this.gameState.isGamePaused() && !this.gameState.isGameOver()) {
-        this.player.attemptJump();
+        if (this.player.attemptJump()) {
+          // Reproducir sonido de salto solo si el salto fue exitoso (el jugador estaba en el suelo)
+          if (this.sfxJump) {
+            this.sfxJump.setVolume(this.getPreferredSfxVolume());
+            this.sfxJump.play();
+          }
+        }
         this.gameState.setPlayerInteracted();
       }
     });
@@ -260,7 +290,7 @@ class GameScene extends Phaser.Scene {
       this.tweens.add({
         targets: this.bgm,
         volume: targetVol,
-        duration: CONSTANTS.AUDIO_CONFIG.FADE_DURATION_MS,
+        duration: 100, // Entrada rápida para coincidir con el fin de la transición
       });
     }
   }
@@ -291,10 +321,12 @@ class GameScene extends Phaser.Scene {
     }
     this.hudManager.showPauseScreen();
 
-    // Pausar música
+    // Pausar música del juego
     if (this.bgm && this.bgm.isPlaying) {
       this.bgm.pause();
     }
+
+    // No reproducir música del menú en pausa (silencio)
   }
 
   resumeGame() {
@@ -309,7 +341,7 @@ class GameScene extends Phaser.Scene {
     }
     this.hudManager.hidePauseScreen();
 
-    // Reanudar música
+    // Reanudar música del juego
     if (this.bgm && this.bgm.isPaused) {
       this.bgm.resume();
     }
@@ -317,6 +349,12 @@ class GameScene extends Phaser.Scene {
 
   restartGame() {
     if (CONSTANTS.DEBUG) console.log("🔄 Restarting game...");
+
+    // Detener música del menú si está sonando
+    if (window.menuMusic) {
+      window.menuMusic.pause();
+      window.isMenuMusicPlaying = false;
+    }
 
     // Ocultar pantalla de game over
     this.hudManager.hideGameOverScreen();
@@ -352,7 +390,8 @@ class GameScene extends Phaser.Scene {
     if (CONSTANTS.DEBUG) console.log("✅ Game restarted");
 
     // Asegurar música en reproducción
-    if (this.bgm && !this.bgm.isPlaying) {
+    if (this.bgm) {
+      if (this.bgm.isPlaying) this.bgm.stop();
       this.bgm.play({ volume: this.getPreferredMusicVolume() });
     }
   }
@@ -376,10 +415,12 @@ class GameScene extends Phaser.Scene {
     this.hudManager.hideGameOverScreen();
     this.hudManager.showStartScreen();
 
-    // Detener música al volver al menú
+    // Detener música del juego
     if (this.bgm && this.bgm.isPlaying) {
       this.bgm.stop();
     }
+
+    // La música del menú ya se maneja en main.js returnToMenu()
   }
 
   handleObstacleCollision(player, obstacle) {
@@ -425,6 +466,12 @@ class GameScene extends Phaser.Scene {
       this.gameState.getBatteryCount()
     );
 
+    // Reproducir sonido de Game Over
+    if (this.sfxGameOver) {
+      this.sfxGameOver.setVolume(this.getPreferredSfxVolume());
+      this.sfxGameOver.play();
+    }
+
     // Fade-out y stop de música en fin del juego
     if (this.bgm && this.bgm.isPlaying) {
       const target = { vol: this.bgm.volume };
@@ -433,8 +480,13 @@ class GameScene extends Phaser.Scene {
         vol: 0,
         duration: CONSTANTS.AUDIO_CONFIG.FADE_DURATION_MS,
         onUpdate: () => this.bgm.setVolume(target.vol),
-        onComplete: () => this.bgm.stop(),
+        onComplete: () => {
+          this.bgm.stop();
+          // No reproducir música del menú en Game Over, solo silencio o SFX de derrota si hubiera
+        },
       });
+    } else {
+      // Si no había música sonando, asegurar silencio
     }
   }
 
