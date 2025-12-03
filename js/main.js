@@ -19,6 +19,10 @@ const config = {
     autoCenter: CONSTANTS.GAME_CONFIG.AUTO_CENTER,
     width: CONSTANTS.GAME_CONFIG.WIDTH,
     height: CONSTANTS.GAME_CONFIG.HEIGHT,
+    // Mejoras para móviles
+    parent: CONSTANTS.GAME_CONFIG.PARENT,
+    expandParent: false,
+    autoRound: true,
   },
   physics: {
     default: CONSTANTS.PHYSICS_CONFIG.DEFAULT,

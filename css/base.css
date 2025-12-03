@@ -186,10 +186,14 @@ body > * {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 #game-container canvas {
   width: 100% !important;
   height: 100% !important;
   object-fit: contain;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
 }
