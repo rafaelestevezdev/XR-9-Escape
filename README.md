@@ -1,52 +1,21 @@
-# XR-9 Escape
+# Actividad Práctica - XR-9 Escape
 
-Un juego arcade de corredor infinito desarrollado con **Phaser.js 3**.
+Este repositorio contiene los entregables para la actividad final de desarrollo de videojuegos.
 
-## ¿De qué trata?
+## Contenido
 
-Controlas un robot que corre automáticamente en una fábrica industrial. Tu objetivo es:
+1.  **[BUG_LIST.md](./BUG_LIST.md)**: Lista de errores identificados y plan de corrección.
+2.  **[PROJECT_CLOSURE.md](./PROJECT_CLOSURE.md)**: Documento de cierre y resumen del proyecto.
+3.  **[DISTRIBUTION_PLAN.md](./DISTRIBUTION_PLAN.md)**: Estrategia de lanzamiento y marketing.
 
-- **Saltar** obstáculos (cajas, martillos, tanques, engranajes) usando **ESPACIO**, **ARRIBA** o **TAP**
-- **Recolectar baterías** ⚡ para mantener tu energía (el juego termina si llega a 0)
-- **Esquivar láseres** disparados por drones que aparecen periódicamente
-- **Sobrevivir el máximo tiempo** mientras la dificultad aumenta
+## Optimización Realizada
 
-## Controles
+Como parte de la actividad, se ha realizado una optimización técnica en el **Rendimiento**:
 
-- **SALTAR**: Espacio / Flecha Arriba / Tocar pantalla
-- **PAUSA**: P / ESC
-- **REINICIAR**: R
+- **Implementación de Object Pooling**: Se modificó el `ObstacleManager` para reutilizar las instancias de los obstáculos en lugar de destruirlas y crearlas constantemente. Esto reduce drásticamente la presión sobre el Garbage Collector y mejora la estabilidad de los FPS en sesiones largas.
 
-## Cómo Ejecutar
+## Instrucciones de Ejecución
 
-1. Abre `index.html` en tu navegador
-2. Haz clic en "INICIAR JUEGO"
-3. ¡A sobrevivir!
-
-## Arquitectura
-
-Proyecto modular basado en **Managers** con separación de responsabilidades:
-
-- `GameScene.js` - Coordina el flujo del juego
-- `Player.js` - Comportamiento del robot
-- `ObstacleManager.js` - Generación de obstáculos
-- `LaserDroneManager.js` - Drones que disparan láseres
-- `GameState.js` - Estado global (puntuación, energía, velocidad)
-- `PhysicsManager.js` - Colisiones y física
-- `HUDManager.js` - Interfaz (puntuación, energía, barra de progreso)
-- `InputManager.js` - Controles (teclado y táctil)
-
-## Características Implementadas
-
-✅ Jugabilidad fluida con saltos y corte de salto  
-✅ Sistema de energía con drenaje continuo  
-✅ Drones láser que aparecen periódicamente  
-✅ Dificultad progresiva  
-✅ HUD completo (puntuación, baterías, energía, nivel)  
-✅ Soporte táctil y responsivo  
-✅ Texturas procedurales optimizadas
-
-## Próximos Pasos
-
-- Más variedad de obstáculos y power-ups
-
+1.  Abrir `index.html` en un navegador web moderno.
+2.  Hacer clic en la pantalla para inicializar el sistema de audio.
+3.  Jugar usando ESPACIO o ARRIBA para saltar.

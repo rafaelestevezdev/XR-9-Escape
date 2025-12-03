@@ -127,6 +127,17 @@ class InputManager {
       }
     });
 
+    // Listener para pointerup (cortar salto en móvil)
+    this.scene.input.on("pointerup", (pointer) => {
+      if (pointer.event) {
+        pointer.event.preventDefault();
+      }
+
+      if (this.onCutJumpCallback) {
+        this.onCutJumpCallback();
+      }
+    });
+
     // Asegurar que hay al menos 1 puntero activo
     this.scene.input.addPointer(1);
   }

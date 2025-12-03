@@ -17,6 +17,7 @@ class ObstacleManager {
     });
 
     this.obstacles = [];
+    this.pool = []; // Object Pool
     this.spawnWindow = CONSTANTS.OBSTACLE_MANAGER_CONFIG.SPAWN_WINDOW;
     this.nextSpawnDelay = Phaser.Math.Between(
       this.spawnWindow.min,
@@ -42,20 +43,22 @@ class ObstacleManager {
   update(currentTime, speed, deltaSeconds = 0) {
     this.speed = speed;
 
-    // Eliminar obstáculos fuera de pantalla o ya destruidos
-    this.obstacles = this.obstacles.filter((obstacle) => {
-      if (obstacle.isOutOfBounds()) {
-        obstacle.destroy();
-        return false;
-      }
-      return true;
-    });
+    // Iterar hacia atrás para poder eliminar elementos sin problemas
+    for (let i = this.obstacles.length - 1; i >= 0; i--) {
+      const obstacle = this.obstacles[i];
 
-    // Actualizar velocidad y comportamiento (rotación, bob)
-    this.obstacles.forEach((obstacle) => {
+      if (obstacle.isOutOfBounds()) {
+        // En lugar de destruir, desactivar y enviar al pool
+        obstacle.deactivate();
+        this.pool.push(obstacle);
+        this.obstacles.splice(i, 1);
+        continue;
+      }
+
+      // Actualizar velocidad y comportamiento
       obstacle.setSpeed(this.speed);
       obstacle.update(deltaSeconds);
-    });
+    }
 
     // Crear nuevos obstáculos
     if (
@@ -78,29 +81,55 @@ class ObstacleManager {
    */
   spawn() {
     const randomType = Phaser.Utils.Array.GetRandom(this.obstacleTypes);
-    const cfg = CONSTANTS.OBSTACLE_CONFIG[randomType] || {};
-    const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
-    const obstacle = new Obstacle(
-      this.scene,
-      targetGroup,
-      CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
-      randomType,
-      this.speed
-    );
+    let obstacle;
+
+    if (this.pool.length > 0) {
+      // Reutilizar del pool
+      obstacle = this.pool.pop();
+      obstacle.activate(
+        CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
+        randomType,
+        this.speed
+      );
+    } else {
+      // Crear nuevo si el pool está vacío
+      const cfg = CONSTANTS.OBSTACLE_CONFIG[randomType] || {};
+      const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
+      obstacle = new Obstacle(
+        this.scene,
+        targetGroup,
+        CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
+        randomType,
+        this.speed
+      );
+    }
+
     this.obstacles.push(obstacle);
     return obstacle;
   }
 
   forceSpawn(type = "battery") {
-    const cfg = CONSTANTS.OBSTACLE_CONFIG[type] || {};
-    const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
-    const obstacle = new Obstacle(
-      this.scene,
-      targetGroup,
-      CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
-      type,
-      this.speed
-    );
+    let obstacle;
+
+    if (this.pool.length > 0) {
+      obstacle = this.pool.pop();
+      obstacle.activate(
+        CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
+        type,
+        this.speed
+      );
+    } else {
+      const cfg = CONSTANTS.OBSTACLE_CONFIG[type] || {};
+      const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
+      obstacle = new Obstacle(
+        this.scene,
+        targetGroup,
+        CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
+        type,
+        this.speed
+      );
+    }
+
     this.obstacles.push(obstacle);
     this.lastSpawnTime = this.scene.time.now;
     this.nextSpawnDelay = Phaser.Math.Between(
@@ -154,6 +183,7 @@ class ObstacleManager {
     this.group.clear(true, true);
     this.batteryGroup.clear(true, true);
     this.obstacles = [];
+    this.pool = []; // Limpiar pool porque los sprites han sido destruidos por group.clear()
     this.spawnWindow = { ...CONSTANTS.OBSTACLE_MANAGER_CONFIG.SPAWN_WINDOW };
     this.nextSpawnDelay = Phaser.Math.Between(
       this.spawnWindow.min,
@@ -186,6 +216,7 @@ class ObstacleManager {
       } catch (e) {}
     });
     this.obstacles = [];
+    this.pool = []; // Limpiar pool
     // Reiniciar la ventana de spawn para evitar aparición inmediata al reactivar
     this.lastSpawnTime = this.scene.time.now;
     this.nextSpawnDelay = Phaser.Math.Between(
@@ -199,34 +230,16 @@ class ObstacleManager {
    */
   removeObstacle(obstacle) {
     if (!obstacle) return;
-    // remove sprite from physics group if still present
-    const sprite = obstacle.getSprite && obstacle.getSprite();
-    if (sprite && this.group && typeof this.group.getChildren === "function") {
-      const children = this.group.getChildren();
-      if (children && children.includes(sprite)) {
-        try {
-          this.group.remove(sprite, true, true);
-        } catch (e) {
-          // ignore
-        }
-      }
+
+    // Desactivar y devolver al pool en lugar de destruir
+    obstacle.deactivate();
+    this.pool.push(obstacle);
+
+    // Eliminar de la lista activa
+    const index = this.obstacles.indexOf(obstacle);
+    if (index > -1) {
+      this.obstacles.splice(index, 1);
     }
-    if (
-      sprite &&
-      this.batteryGroup &&
-      typeof this.batteryGroup.getChildren === "function"
-    ) {
-      const children = this.batteryGroup.getChildren();
-      if (children && children.includes(sprite)) {
-        try {
-          this.batteryGroup.remove(sprite, true, true);
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
-    obstacle.destroy();
-    this.obstacles = this.obstacles.filter((o) => o !== obstacle);
   }
 
   getSpeed() {

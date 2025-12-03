@@ -1,6 +1,7 @@
 /**
  * EscenaIndustrial.js - Escena dedicada a un fondo industrial procedural
  * Usa Phaser.GameObjects.Graphics para construir capas con desplazamiento dinámico.
+ * Refactorizado para optimización: Usa objetos Graphics individuales movibles en lugar de redibujar todo.
  */
 class EscenaIndustrial extends Phaser.Scene {
   constructor() {
@@ -21,8 +22,6 @@ class EscenaIndustrial extends Phaser.Scene {
     );
     this.floorThickness = Math.max(this.sceneHeight - this.floorY, 48);
     this.wrapPadding = this.sceneWidth * 0.6;
-    // Acumuladores para reducir redibujos (throttling ~30 FPS)
-    this._groundRedrawAccum = 0;
   }
 
   create() {
@@ -136,21 +135,28 @@ class EscenaIndustrial extends Phaser.Scene {
   }
 
   createStructureLayer(name, depth, config) {
-    // Los elementos se almacenan para redibujarse con offsets de parallax
-    const graphics = this.add.graphics();
-    graphics.setDepth(depth).setScrollFactor(0);
-
-    const elements = [];
+    const items = [];
     const spacing = this.sceneWidth / config.count;
+
     for (let i = 0; i < config.count; i += 1) {
-      elements.push(this.spawnStructure(config, i * spacing));
+      // Crear un Graphics individual para cada estructura
+      const graphics = this.add.graphics();
+      graphics.setDepth(depth).setScrollFactor(0);
+
+      const baseX = i * spacing;
+      const element = this.spawnStructureData(config, baseX);
+
+      // Posicionar el graphics y dibujar
+      graphics.x = element.x;
+      this.drawStructure(graphics, element, config);
+
+      items.push({ graphics, element });
     }
 
-    this.layers[name] = { graphics, elements, config, redrawAccum: 0 };
-    this.redrawStructureLayer(name);
+    this.layers[name] = { items, config };
   }
 
-  spawnStructure(config, baseX = 0) {
+  spawnStructureData(config, baseX = 0) {
     const width = Phaser.Math.Between(
       config.widthRange.min,
       config.widthRange.max
@@ -162,7 +168,7 @@ class EscenaIndustrial extends Phaser.Scene {
 
     const x = baseX + Phaser.Math.Between(-config.jitter, config.jitter);
     return {
-      x,
+      x, // Posición inicial absoluta
       width,
       height,
       type: this.pickRandom(config.types),
@@ -175,21 +181,14 @@ class EscenaIndustrial extends Phaser.Scene {
     };
   }
 
-  redrawStructureLayer(name) {
-    const layer = this.layers[name];
-    if (!layer) return;
-
-    const { graphics, elements, config } = layer;
+  drawStructure(graphics, element, config) {
     graphics.clear();
 
-    elements.forEach((element) => {
-      this.drawStructure(graphics, element, config);
-    });
-  }
-
-  drawStructure(graphics, element, config) {
     const baseY = this.floorY - config.floorOffset;
-    const x = element.x;
+    // Dibujamos relativo a (0,0) del objeto Graphics.
+    // El objeto Graphics ya está posicionado en (element.x, 0) o similar.
+    // Usamos x=0 localmente.
+    const x = 0;
     const y = baseY - element.height;
 
     graphics.fillStyle(element.color, element.alpha);
@@ -313,9 +312,6 @@ class EscenaIndustrial extends Phaser.Scene {
     this.groundBaseGraphics.setDepth(-20).setScrollFactor(1);
     this.drawGroundBase();
 
-    this.groundDetailGraphics = this.add.graphics();
-    this.groundDetailGraphics.setDepth(-15).setScrollFactor(1);
-
     const config = {
       speedMultiplier: 1.1,
       widthRange: { min: 40, max: 110 },
@@ -331,15 +327,24 @@ class EscenaIndustrial extends Phaser.Scene {
       jitter: 30,
     };
 
-    this.layers.ground = { config };
-    this.floorSegments = [];
+    const items = [];
     const count = Math.ceil(this.sceneWidth / 70) + 5;
     const spacing = this.sceneWidth / Math.max(count - 1, 1);
+
     for (let i = 0; i < count; i += 1) {
-      this.floorSegments.push(this.spawnFloorSegment(config, i * spacing));
+      const graphics = this.add.graphics();
+      graphics.setDepth(-15).setScrollFactor(1);
+
+      const baseX = i * spacing;
+      const segment = this.spawnFloorSegmentData(config, baseX);
+
+      graphics.x = segment.x;
+      this.drawFloorSegment(graphics, segment);
+
+      items.push({ graphics, element: segment });
     }
 
-    this.redrawGroundDetails();
+    this.layers.ground = { items, config };
   }
 
   drawGroundBase() {
@@ -379,7 +384,7 @@ class EscenaIndustrial extends Phaser.Scene {
     );
   }
 
-  spawnFloorSegment(config, baseX = 0) {
+  spawnFloorSegmentData(config, baseX = 0) {
     const width = Phaser.Math.Between(
       config.widthRange.min,
       config.widthRange.max
@@ -403,51 +408,36 @@ class EscenaIndustrial extends Phaser.Scene {
     };
   }
 
-  redrawGroundDetails() {
-    const { config } = this.layers.ground;
-    this.groundDetailGraphics.clear();
+  drawFloorSegment(graphics, segment) {
+    graphics.clear();
+    const y = this.floorY - segment.height;
+    const x = 0; // Local x
 
-    this.groundDetailGraphics.fillStyle(0x0f151e, 0.8);
-    this.groundDetailGraphics.fillRect(0, this.floorY, this.sceneWidth, 4);
-    this.groundDetailGraphics.fillStyle(0x2c3d52, 0.35);
-    this.groundDetailGraphics.fillRect(0, this.floorY - 6, this.sceneWidth, 2);
+    graphics.fillStyle(segment.color, segment.alpha);
+    graphics.fillRect(x, y, segment.width, segment.height);
+    graphics.fillStyle(segment.accent, segment.alpha * 0.7);
+    graphics.fillRect(x, y, segment.width, 3);
 
-    this.floorSegments.forEach((segment, index) => {
-      const y = this.floorY - segment.height;
-      this.groundDetailGraphics.fillStyle(segment.color, segment.alpha);
-      this.groundDetailGraphics.fillRect(
-        segment.x,
-        y,
-        segment.width,
-        segment.height
+    if (segment.width > 55) {
+      const boltCount = Math.max(2, Math.floor(segment.width / 40));
+      const boltSpacing = segment.width / boltCount;
+      graphics.fillStyle(0x4f6a83, 0.8);
+      for (let b = 0; b < boltCount; b += 1) {
+        const boltX = x + boltSpacing * b + boltSpacing * 0.5;
+        graphics.fillCircle(boltX, y + segment.height * 0.65, 2);
+      }
+    }
+
+    // Detalle vertical ocasional
+    if (Math.floor(segment.width) % 2 === 0) {
+      graphics.fillStyle(0x0c1016, 0.45);
+      graphics.fillRect(
+        x + segment.width * 0.15,
+        this.floorY,
+        4,
+        this.floorThickness * 0.5
       );
-      this.groundDetailGraphics.fillStyle(segment.accent, segment.alpha * 0.7);
-      this.groundDetailGraphics.fillRect(segment.x, y, segment.width, 3);
-
-      if (segment.width > 55) {
-        const boltCount = Math.max(2, Math.floor(segment.width / 40));
-        const boltSpacing = segment.width / boltCount;
-        this.groundDetailGraphics.fillStyle(0x4f6a83, 0.8);
-        for (let b = 0; b < boltCount; b += 1) {
-          const boltX = segment.x + boltSpacing * b + boltSpacing * 0.5;
-          this.groundDetailGraphics.fillCircle(
-            boltX,
-            y + segment.height * 0.65,
-            2
-          );
-        }
-      }
-
-      if (index % 3 === 0) {
-        this.groundDetailGraphics.fillStyle(0x0c1016, 0.45);
-        this.groundDetailGraphics.fillRect(
-          segment.x + segment.width * 0.15,
-          this.floorY,
-          4,
-          this.floorThickness * 0.5
-        );
-      }
-    });
+    }
   }
 
   update(time, delta) {
@@ -462,82 +452,93 @@ class EscenaIndustrial extends Phaser.Scene {
     const layer = this.layers[name];
     if (!layer) return;
 
-    const { elements, config } = layer;
+    const { items, config } = layer;
     const speed = this.baseScrollSpeed * config.speedMultiplier;
-    elements.forEach((element) => {
-      element.x -= speed * deltaSeconds;
-      if (element.x + element.width < config.recycleThreshold) {
-        this.recycleStructure(element, config);
+
+    items.forEach((item) => {
+      // Mover el contenedor/graphics
+      item.graphics.x -= speed * deltaSeconds;
+
+      // Verificar reciclaje
+      // Usamos graphics.x como la posición actual
+      if (item.graphics.x + item.element.width < config.recycleThreshold) {
+        this.recycleStructure(item, config);
       }
     });
-
-    // Redibujar como máximo a ~30 FPS para reducir carga
-    layer.redrawAccum += deltaSeconds;
-    if (layer.redrawAccum >= 1 / 30) {
-      this.redrawStructureLayer(name);
-      layer.redrawAccum = 0;
-    }
   }
 
-  recycleStructure(element, config) {
-    element.width = Phaser.Math.Between(
+  recycleStructure(item, config) {
+    // Generar nuevos datos
+    item.element.width = Phaser.Math.Between(
       config.widthRange.min,
       config.widthRange.max
     );
-    element.height = Phaser.Math.Between(
+    item.element.height = Phaser.Math.Between(
       Math.floor(config.heightRange.min),
       Math.floor(config.heightRange.max)
     );
-    element.x = Phaser.Math.Between(
+
+    // Nueva posición X (al final de la pantalla + padding)
+    const newX = Phaser.Math.Between(
       config.spawnPadding.min,
       config.spawnPadding.max
     );
-    element.type = this.pickRandom(config.types);
-    element.color = this.pickRandom(config.palette);
-    element.accent = this.pickRandom(config.accentPalette);
-    element.alpha = Phaser.Math.FloatBetween(
+
+    item.element.type = this.pickRandom(config.types);
+    item.element.color = this.pickRandom(config.palette);
+    item.element.accent = this.pickRandom(config.accentPalette);
+    item.element.alpha = Phaser.Math.FloatBetween(
       config.alphaRange.min,
       config.alphaRange.max
     );
+
+    // Actualizar graphics
+    item.graphics.x = newX;
+
+    // Redibujar UNA sola vez
+    this.drawStructure(item.graphics, item.element, config);
   }
 
   updateGroundDetails(deltaSeconds) {
-    const config = this.layers.ground.config;
+    const layer = this.layers.ground;
+    if (!layer) return;
+
+    const { items, config } = layer;
     const speed = this.baseScrollSpeed * config.speedMultiplier;
-    this.floorSegments.forEach((segment) => {
-      segment.x -= speed * deltaSeconds;
-      if (segment.x + segment.width < config.recycleThreshold) {
-        this.recycleFloorSegment(segment, config);
+
+    items.forEach((item) => {
+      item.graphics.x -= speed * deltaSeconds;
+
+      if (item.graphics.x + item.element.width < config.recycleThreshold) {
+        this.recycleFloorSegment(item, config);
       }
     });
-
-    // Redibujar con límite de ~30 FPS
-    this._groundRedrawAccum += deltaSeconds;
-    if (this._groundRedrawAccum >= 1 / 30) {
-      this.redrawGroundDetails();
-      this._groundRedrawAccum = 0;
-    }
   }
 
-  recycleFloorSegment(segment, config) {
-    segment.width = Phaser.Math.Between(
+  recycleFloorSegment(item, config) {
+    item.element.width = Phaser.Math.Between(
       config.widthRange.min,
       config.widthRange.max
     );
-    segment.height = Phaser.Math.Between(
+    item.element.height = Phaser.Math.Between(
       config.heightRange.min,
       config.heightRange.max
     );
-    segment.x = Phaser.Math.Between(
+
+    const newX = Phaser.Math.Between(
       config.spawnPadding.min,
       config.spawnPadding.max
     );
-    segment.color = this.pickRandom(config.palette);
-    segment.accent = this.pickRandom(config.accentPalette);
-    segment.alpha = Phaser.Math.FloatBetween(
+
+    item.element.color = this.pickRandom(config.palette);
+    item.element.accent = this.pickRandom(config.accentPalette);
+    item.element.alpha = Phaser.Math.FloatBetween(
       config.alphaRange.min,
       config.alphaRange.max
     );
+
+    item.graphics.x = newX;
+    this.drawFloorSegment(item.graphics, item.element);
   }
 
   pickRandom(list) {

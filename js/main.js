@@ -191,3 +191,36 @@ window.showControls = showControls;
 window.closeModal = closeModal;
 window.getGameInstance = getGameInstance;
 window.destroyGame = destroyGame;
+
+// Fullscreen logic
+window.toggleFullscreen = function () {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+};
+
+// Update fullscreen icon
+document.addEventListener("fullscreenchange", () => {
+  const enterIcon = document.getElementById("icon-fullscreen-enter");
+  const exitIcon = document.getElementById("icon-fullscreen-exit");
+
+  if (document.fullscreenElement) {
+    enterIcon.classList.add("hidden");
+    exitIcon.classList.remove("hidden");
+  } else {
+    enterIcon.classList.remove("hidden");
+    exitIcon.classList.add("hidden");
+  }
+});
+
+// Show fullscreen button on mobile
+if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  const fsBtn = document.getElementById("fullscreen-btn");
+  if (fsBtn) fsBtn.classList.remove("hidden");
+}

@@ -48,7 +48,9 @@ class LaserDroneManager {
 
   update(time, gameSpeed, dt) {
     // actualizar láseres: movimiento manual y limpieza
-    this.laserGroup.getChildren().forEach((laser) => {
+    const lasers = this.laserGroup.getChildren();
+    for (let i = lasers.length - 1; i >= 0; i--) {
+      const laser = lasers[i];
       const vx = laser.getData("vx");
       const vy = laser.getData("vy");
       if (typeof vx === "number" && typeof vy === "number") {
@@ -68,7 +70,7 @@ class LaserDroneManager {
           laser.destroy();
         } catch (e) {}
       }
-    });
+    }
 
     if (this.activeDrone) {
       const finished = this.activeDrone.update(time, gameSpeed, dt);
