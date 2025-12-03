@@ -1,15 +1,16 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   body {
-    padding: 8px;
-    align-items: flex-start;
-    padding-top: max(8px, env(safe-area-inset-top));
+    padding: 4px;
+    align-items: center;
+    padding-top: max(4px, env(safe-area-inset-top));
   }
 
   .cabinet {
-    padding: 12px;
-    gap: 8px;
+    padding: 8px;
+    gap: 4px;
     width: 100%;
+    max-width: 100%;
   }
 
   .cabinet-header {
@@ -20,12 +21,22 @@
   .cabinet-screen {
     border-width: 2px;
     max-width: 100%;
+    padding-bottom: 75%; /* Mantener aspect ratio 4:3 */
   }
 
-  .score-display,
+  .score-display {
+    font-size: 14px;
+    padding: 6px 12px;
+    top: 12px;
+    left: 12px;
+  }
+  
   .battery-display {
-    font-size: 10px;
-    padding: 4px 8px;
+    font-size: 12px;
+    padding: 5px 10px;
+    top: 12px;
+    left: auto;
+    right: 12px;
   }
 
   .start-panel {
@@ -91,95 +102,108 @@
 
 @media (max-width: 480px) {
   body {
-    padding: 4px;
-    align-items: flex-start;
-    padding-top: max(4px, env(safe-area-inset-top));
+    padding: 0;
+    align-items: center;
+    padding-top: max(0px, env(safe-area-inset-top));
   }
 
   .cabinet {
-    padding: 6px;
+    padding: 4px;
     border-width: 2px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    gap: 6px;
+    gap: 4px;
     width: 100%;
+    max-width: 100%;
   }
 
   .cabinet-header {
     font-size: 8px;
-    padding: 3px 0;
+    padding: 2px 0;
   }
 
   .cabinet-screen {
     border-width: 2px;
     max-width: 100%;
-  }
-
-  .score-display,
-  .battery-display {
-    font-size: 12px;
-    padding: 6px 10px;
-    top: 10px;
+    padding-bottom: 75%; /* Mantener aspect ratio 4:3 */
   }
 
   .score-display {
-    left: 10px;
+    font-size: 16px;
+    padding: 8px 14px;
+    top: 8px;
+    left: 8px;
+    letter-spacing: 0.1em;
   }
 
   .battery-display {
-    right: 10px;
-  }
-
-  .start-panel {
-    padding: 30px 10px;
-    gap: 12px;
-  }
-
-  .start-title {
-    font-size: 24px;
-  }
-
-  .start-subtitle {
-    font-size: 18px;
-  }
-
-  .start-tagline {
-    font-size: 6px;
-  }
-
-  .start-btn,
-  .config-btn {
-    padding: 16px 32px; /* Significantly increased for touch */
     font-size: 14px;
-    touch-action: manipulation;
-  }
-
-  .help-btn {
-    padding: 10px 14px;
-    font-size: 12px;
-    touch-action: manipulation;
-  }
-
-  .developer {
-    font-size: 6px;
-  }
-
-  .score-display,
-  .battery-display {
-    font-size: 10px;
-    padding: 4px 8px;
-  }
-
-  .game-over-panel {
+    padding: 6px 10px;
+    top: 8px;
+    left: auto;
+  .start-panel {
     padding: 20px 10px;
     gap: 10px;
   }
 
+  .start-title {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .start-subtitle {
+    font-size: 20px;
+    margin-top: -8px;
+  }
+
+  .start-tagline {
+    font-size: 7px;
+    margin-top: -8px;
+  }
+
+  .start-btn {
+    padding: 18px 36px;
+    font-size: 14px;
+    touch-action: manipulation;
+    min-height: 48px;
+    width: auto;
+    max-width: 90%;
+  }
+  
+  .config-btn,
+  .mute-btn,
+  .help-btn {
+    padding: 12px;
+    font-size: 12px;
+    touch-action: manipulation;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  .game-over-panel {
+    padding: 20px 10px;
+    gap: 12px;
+  }
+
   .game-over-text {
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.3;
   }
 
   .game-over-score,
   .game-over-batteries {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .restart-btn,
+  .menu-btn {
+    padding: 18px 28px;
+    font-size: 13px;
+    touch-action: manipulation;
+    margin: 6px;
+    min-height: 50px;
+    width: auto;
+    max-width: 90%;
+  }game-over-batteries {
     font-size: 10px;
   }
 
@@ -193,20 +217,85 @@
 
   .modal-content {
     padding: 15px;
+    max-width: 95%;
   }
 
   .modal-content h2 {
     font-size: 12px;
+    margin-bottom: 12px;
   }
 
   .modal-content p {
     font-size: 8px;
+    line-height: 1.6;
   }
 
   .modal-close-btn {
     padding: 16px 24px; /* Increased to meet ~44px target height */
     font-size: 12px;
     touch-action: manipulation;
+  }
+  
+  .config-subtitle {
+    font-size: 11px;
+    margin: 4px 0 8px 0;
+  }
+  
+  .config-label {
+    font-size: 9px;
+    margin: 12px 0 6px 0;
+  }
+  
+  .config-hint {
+    font-size: 7px;
+    line-height: 1.5;
+  }
+  
+  .config-audio-row {
+    grid-template-columns: 20px 1fr 42px;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .range-value {
+    font-size: 9px;
+  }
+}
+}
+
+/* Tablets y pantallas medianas en horizontal */
+@media (min-width: 481px) and (max-width: 1024px) and (orientation: landscape) {
+  .cabinet {
+    max-width: 95%;
+  }
+
+  .score-display {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .battery-display {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .energy-container {
+    top: 45px;
+  }
+
+  .energy-track {
+    width: 110px;
+  }
+  
+  .help-btn,
+  .config-btn {
+    padding: 10px 14px;
+  }
+  
+  .help-btn svg,
+  .config-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -222,6 +311,7 @@
   flex-direction: column;
   text-align: center;
   color: var(--panel-edge);
+  padding: 20px;
 }
 
 .orientation-content {
@@ -232,6 +322,12 @@
   animation: pulse 2s infinite;
 }
 
+.orientation-content p {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 90%;
+}
+
 .orientation-icon {
   width: 64px;
   height: 64px;
@@ -239,15 +335,19 @@
 }
 
 .orientation-sub {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
   margin-top: -10px;
 }
 
 /* Show orientation overlay only on portrait mobile */
-@media screen and (orientation: portrait) and (max-width: 900px) {
+@media screen and (orientation: portrait) and (max-width: 900px) and (max-height: 900px) {
   .orientation-overlay {
     display: flex;
+  }
+  
+  body {
+    overflow: hidden;
   }
 }
 
@@ -308,20 +408,57 @@ canvas {
 }
 
 /* Extra small screens adjustments */
+/* Extra small screens adjustments */
 @media (max-width: 480px) {
   .energy-container {
-    top: 8px;
+    top: 50px;
     right: 8px;
-    padding: 2px;
+    padding: 2px 4px;
+    gap: 4px;
   }
 
   .energy-track {
-    width: 80px;
-    height: 10px;
+    width: 100px;
+    height: 12px;
   }
 
   .energy-text {
     font-size: 8px;
     margin: 0 4px;
+  }
+  
+  .powerup-indicator {
+    top: 60px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .pause-panel {
+    padding: 20px;
+  }
+
+  .pause-title {
+    font-size: 24px;
+  }
+
+  .pause-subtitle {
+    font-size: 10px;
+  }
+  
+  .intro-text {
+    font-size: 12px;
+    padding: 0 20px;
+    text-align: center;
+    line-height: 1.6;
+  }
+  
+  .transition-text {
+    font-size: 13px;
+    padding: 0 20px;
+    text-align: center;
+  }
+  
+  .loading-bar {
+    width: 160px;
   }
 }
