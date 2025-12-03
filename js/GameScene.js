@@ -207,8 +207,17 @@ class GameScene extends Phaser.Scene {
       this.physicsManager.getGroundGroup()
     );
 
-    // Colisión entre jugador y obstáculos
+    // Colisión entre jugador y obstáculos (para bloqueo físico)
     this.physicsManager.addCollision(
+      this.player.getSprite(),
+      this.obstacleManager.getGroup(),
+      this.handleObstacleCollision,
+      this
+    );
+
+    // Overlap adicional entre jugador y obstáculos (garantiza registro de golpe)
+    // Esto cubre casos donde la resolución de colisión no ocurre por offsets de hitbox
+    this.physicsManager.addOverlap(
       this.player.getSprite(),
       this.obstacleManager.getGroup(),
       this.handleObstacleCollision,
