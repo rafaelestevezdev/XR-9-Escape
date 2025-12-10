@@ -310,11 +310,14 @@
   }
 
   .energy-container {
-    top: 45px;
+    bottom: 16px;
+    top: auto;
+    width: min(400px, calc(100% - 56px));
+    gap: 8px;
   }
 
   .energy-track {
-    width: 110px;
+    min-width: 140px;
   }
 
   .help-btn,
@@ -441,20 +444,23 @@ canvas {
 /* Extra small screens adjustments */
 @media (max-width: 480px) {
   .energy-container {
-    top: 52px;
-    right: 10px;
-    padding: 2px 4px;
-    gap: 4px;
+    bottom: 12px;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 28px);
+    padding: 4px 8px;
+    gap: 6px;
   }
 
   .energy-track {
-    width: 100px;
+    min-width: 0;
     height: 12px;
   }
 
   .energy-text {
     font-size: 8px;
-    margin: 0 4px;
+    margin: 0;
   }
 
   .powerup-indicator {

@@ -64,28 +64,28 @@ const OBSTACLE_CONFIG = {
     texture: "obstacle_crate",
     originY: 1,
     display: { width: 25, height: 25 },
-    hitbox: { width: 20, height: 20, offsetX: 2.5, offsetY: 2.5 },
+    hitbox: { width: 18, height: 18, offsetX: 3.5, offsetY: 3.5 },
     minGap: 200,
   },
   hammer: {
     texture: "obstacle_hammer",
     originY: 1,
     display: { width: 30, height: 40 },
-    hitbox: { width: 25, height: 35, offsetX: 2.5, offsetY: 2.5 },
+    hitbox: { width: 22, height: 34, offsetX: 4, offsetY: 3 },
     minGap: 190,
   },
   tank: {
     texture: "obstacle_tank",
     originY: 1,
     display: { width: 35, height: 45 },
-    hitbox: { width: 30, height: 40, offsetX: 2.5, offsetY: 2.5 },
+    hitbox: { width: 26, height: 38, offsetX: 4.5, offsetY: 3.5 },
     minGap: 220,
   },
   gear: {
     texture: "obstacle_gear",
     originY: 0.5,
     display: { width: 30, height: 30 },
-    hitbox: { width: 25, height: 25, offsetX: 2.5, offsetY: 2.5 },
+    hitbox: { width: 20, height: 20, offsetX: 5, offsetY: 5 },
     minGap: 210,
     rotating: true,
     rotSpeed: 120,
@@ -94,7 +94,7 @@ const OBSTACLE_CONFIG = {
     texture: "collectible_battery",
     originY: 1,
     display: { width: 20, height: 25 },
-    hitbox: { width: 18, height: 22, offsetX: 1, offsetY: 1.5 },
+    hitbox: { width: 14, height: 18, offsetX: 3, offsetY: 3.5 },
     minGap: 180,
     collectible: true,
     yOffset: -70,
@@ -106,7 +106,7 @@ const OBSTACLE_CONFIG = {
     texture: "collectible_dash",
     originY: 1,
     display: { width: 22, height: 22 },
-    hitbox: { width: 20, height: 20, offsetX: 1, offsetY: 1 },
+    hitbox: { width: 16, height: 16, offsetX: 3, offsetY: 3 },
     minGap: 220,
     collectible: true,
     yOffset: -72,
@@ -118,7 +118,8 @@ const OBSTACLE_CONFIG = {
 
 // Configuración del ObstacleManager
 const OBSTACLE_MANAGER_CONFIG = {
-  SPAWN_WINDOW: { min: 900, max: 1600 },
+  // Ventana de spawn más rápida para mejor ritmo
+  SPAWN_WINDOW: { min: 650, max: 1200 },
   TYPES: [
     "crate",
     "hammer",

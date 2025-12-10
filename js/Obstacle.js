@@ -29,6 +29,9 @@ class Obstacle {
     this.sprite.setImmovable(true);
     group.add(this.sprite);
 
+    // Guardar grupo actual para reasignar en reuso
+    this._currentGroup = group;
+
     // Behavior flags
     this.collectible = !!config.collectible;
     this._isBattery = !!config.isBattery;
@@ -58,7 +61,7 @@ class Obstacle {
   /**
    * Reactivar el obstáculo desde el pool
    */
-  activate(spawnX, type, speed) {
+  activate(spawnX, type, speed, targetGroup) {
     this.type = type;
     const config = this.getConfig(type);
 
@@ -75,6 +78,15 @@ class Obstacle {
     this.sprite.setDisplaySize(config.display.width, config.display.height);
     this.sprite.body.setSize(config.hitbox.width, config.hitbox.height);
     this.sprite.body.setOffset(config.hitbox.offsetX, config.hitbox.offsetY);
+
+    // Reasignar a grupo correcto si cambia (obstáculo vs coleccionable)
+    if (targetGroup && this._currentGroup !== targetGroup) {
+      if (this._currentGroup) {
+        this._currentGroup.remove(this.sprite, false);
+      }
+      targetGroup.add(this.sprite);
+      this._currentGroup = targetGroup;
+    }
 
     // Resetear posición y estado
     this.sprite.setPosition(spawnX, spawnY);

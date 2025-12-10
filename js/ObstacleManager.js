@@ -81,20 +81,33 @@ class ObstacleManager {
    */
   spawn() {
     const randomType = Phaser.Utils.Array.GetRandom(this.obstacleTypes);
+    const cfg = CONSTANTS.OBSTACLE_CONFIG[randomType] || {};
+    const isCollectible = !!cfg.collectible;
+    const targetGroup = isCollectible ? this.batteryGroup : this.group;
+
     let obstacle;
 
-    if (this.pool.length > 0) {
-      // Reutilizar del pool
-      obstacle = this.pool.pop();
+    // Buscar un obstáculo del mismo tipo en el pool
+    let poolIndex = -1;
+    for (let i = 0; i < this.pool.length; i++) {
+      const poolCfg = CONSTANTS.OBSTACLE_CONFIG[this.pool[i].type] || {};
+      if (!!poolCfg.collectible === isCollectible) {
+        poolIndex = i;
+        break;
+      }
+    }
+
+    if (poolIndex !== -1) {
+      // Reutilizar del pool si encontramos uno del tipo correcto
+      obstacle = this.pool.splice(poolIndex, 1)[0];
       obstacle.activate(
         CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
         randomType,
-        this.speed
+        this.speed,
+        targetGroup
       );
     } else {
-      // Crear nuevo si el pool está vacío
-      const cfg = CONSTANTS.OBSTACLE_CONFIG[randomType] || {};
-      const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
+      // Crear nuevo si el pool está vacío o no hay tipo compatible
       obstacle = new Obstacle(
         this.scene,
         targetGroup,
@@ -110,17 +123,29 @@ class ObstacleManager {
 
   forceSpawn(type = "battery") {
     let obstacle;
+    const cfg = CONSTANTS.OBSTACLE_CONFIG[type] || {};
+    const isCollectible = !!cfg.collectible;
+    const targetGroup = isCollectible ? this.batteryGroup : this.group;
 
-    if (this.pool.length > 0) {
-      obstacle = this.pool.pop();
+    // Buscar en el pool solo elementos compatibles (coleccionable vs obstáculo)
+    let poolIndex = -1;
+    for (let i = 0; i < this.pool.length; i++) {
+      const poolCfg = CONSTANTS.OBSTACLE_CONFIG[this.pool[i].type] || {};
+      if (!!poolCfg.collectible === isCollectible) {
+        poolIndex = i;
+        break;
+      }
+    }
+
+    if (poolIndex !== -1) {
+      obstacle = this.pool.splice(poolIndex, 1)[0];
       obstacle.activate(
         CONSTANTS.GAME_POSITIONS.OBSTACLE_SPAWN_X,
         type,
-        this.speed
+        this.speed,
+        targetGroup
       );
     } else {
-      const cfg = CONSTANTS.OBSTACLE_CONFIG[type] || {};
-      const targetGroup = cfg.collectible ? this.batteryGroup : this.group;
       obstacle = new Obstacle(
         this.scene,
         targetGroup,

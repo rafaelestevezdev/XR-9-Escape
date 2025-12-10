@@ -383,9 +383,6 @@ class GameScene extends Phaser.Scene {
     this.hudManager.updateScore(0);
     this.hudManager.updateBatteryCount(0);
     this.hudManager.updateSpeed(CONSTANTS.GAME_INITIAL_STATE.SPEED);
-    this.hudManager.updateStage(
-      CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY
-    );
 
     // Iniciar el juego directamente
     this.gameState.setPlayerInteracted();
@@ -434,6 +431,19 @@ class GameScene extends Phaser.Scene {
 
   handleObstacleCollision(player, obstacle) {
     if (this.gameState.isGameActive()) {
+      // Pequeño punch visual al golpear
+      const cam = this.cameras.main;
+      if (cam) {
+        cam.shake(140, 0.012);
+        cam.flash(140, 255, 96, 96, false);
+      }
+      const spr = this.player?.getSprite?.();
+      if (spr) {
+        spr.setTint(0xff6666);
+        this.time.delayedCall(160, () => {
+          if (spr && spr.clearTint) spr.clearTint();
+        });
+      }
       this.endGame();
     }
   }
@@ -441,8 +451,48 @@ class GameScene extends Phaser.Scene {
   handleCollectibleOverlap(player, itemSprite) {
     if (!this.gameState.isGameActive()) return;
     const type = itemSprite.getData("type");
-    // Eliminar el item del mundo
-    this.obstacleManager.removeObstacle(itemSprite.getData("ref"));
+
+    // Congelar física y preparar animación de recogida
+    const ref = itemSprite.getData("ref");
+    if (itemSprite.body) {
+      itemSprite.body.enable = false;
+      itemSprite.body.setVelocity(0, 0);
+    }
+
+    // Feedback visual rápido
+    this.tweens.add({
+      targets: itemSprite,
+      scaleX: 1.35,
+      scaleY: 1.35,
+      alpha: 0,
+      duration: 180,
+      ease: "quad.out",
+      onComplete: () => {
+        this.obstacleManager.removeObstacle(ref);
+      },
+    });
+
+    // Popup flotante
+    const popupText = type === "battery" ? "+1 ⚡" : "DASH";
+    const popup = this.add
+      .text(itemSprite.x, itemSprite.y - 10, popupText, {
+        fontFamily: "Press Start 2P",
+        fontSize: "12px",
+        color: "#9bf0ff",
+        stroke: "#111",
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setDepth(5000);
+
+    this.tweens.add({
+      targets: popup,
+      y: popup.y - 20,
+      alpha: 0,
+      duration: 450,
+      ease: "sine.out",
+      onComplete: () => popup.destroy(),
+    });
 
     if (type === "battery") {
       this.gameState.addBattery();

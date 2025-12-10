@@ -106,12 +106,6 @@ class HUDManager {
       this._lastSpeedRounded = speedRounded;
     }
 
-    const stage = gameState.getDifficultyLevel();
-    if (stage !== this._lastStage) {
-      this.updateStage(stage);
-      this._lastStage = stage;
-    }
-
     // Power-up activo
     const activeLabel = gameState.getActivePowerupLabel();
     if (activeLabel) {
@@ -179,17 +173,6 @@ class HUDManager {
     if (this.speedIndicatorElement) {
       // speed ya llega redondeado desde update()
       this.speedIndicatorElement.textContent = `VEL ${speed}`;
-    }
-  }
-
-  /**
-   * Actualiza el indicador de nivel/dificultad
-   */
-  updateStage(level) {
-    if (this.stageIndicatorElement) {
-      this.stageIndicatorElement.textContent = `NIV ${level
-        .toString()
-        .padStart(2, "0")}`;
     }
   }
 
@@ -308,7 +291,6 @@ class HUDManager {
     this.updateScore(0);
     this.updateBatteryCount(0);
     this.updateSpeed(CONSTANTS.GAME_INITIAL_STATE.SPEED);
-    this.updateStage(CONSTANTS.OBSTACLE_MANAGER_CONFIG.INITIAL_DIFFICULTY);
     this.hideGameOverScreen();
     this.showStartScreen();
   }
@@ -340,7 +322,7 @@ class HUDManager {
   }
 
   /**
-   * Muestra/actualiza el indicador de power-up
+   * Muestra u oculta el indicador de power-up
    */
   showPowerupIndicator(text) {
     if (!this.powerupIndicatorElement) return;
