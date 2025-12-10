@@ -47,6 +47,8 @@ class LaserDroneManager {
   }
 
   update(time, gameSpeed, dt) {
+    if (!this.laserGroup) return; // defensivo: grupo destruido o escena cerrándose
+
     // actualizar láseres: movimiento manual y limpieza
     const lasers = this.laserGroup.getChildren();
     for (let i = lasers.length - 1; i >= 0; i--) {

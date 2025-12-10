@@ -164,10 +164,12 @@ class LaserDrone {
   }
 
   _fireLaser(gameSpeed) {
+    if (!this.player || !this.player.getSprite) return;
+    const playerSprite = this.player.getSprite();
+    if (!playerSprite) return;
+
     const key = this._ensureLaserTexture();
     const projectileSpeed = gameSpeed + this.laserSpeed;
-
-    const playerSprite = this.player.getSprite();
     const muzzleX = this.sprite.x - 58;
     const muzzleY = this.sprite.y;
     const targetX = playerSprite.x;
