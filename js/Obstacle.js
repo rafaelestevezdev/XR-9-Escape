@@ -93,6 +93,7 @@ class Obstacle {
     this.sprite.setActive(true);
     this.sprite.setVisible(true);
     this.sprite.body.enable = true;
+    this.sprite.setAngle(0); // Resetear rotación
 
     // Resetear flags
     this.collectible = !!config.collectible;

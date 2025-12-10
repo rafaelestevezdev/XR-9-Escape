@@ -213,16 +213,8 @@ class GameScene extends Phaser.Scene {
       this.physicsManager.getGroundGroup()
     );
 
-    // Colisión entre jugador y obstáculos (para bloqueo físico)
-    this.physicsManager.addCollision(
-      this.player.getSprite(),
-      this.obstacleManager.getGroup(),
-      this.handleObstacleCollision,
-      this
-    );
-
-    // Overlap adicional entre jugador y obstáculos (garantiza registro de golpe)
-    // Esto cubre casos donde la resolución de colisión no ocurre por offsets de hitbox
+    // Overlap entre jugador y obstáculos (solo detectar, sin bloqueo físico)
+    // Esto permite saltar sobre ellos sin perder
     this.physicsManager.addOverlap(
       this.player.getSprite(),
       this.obstacleManager.getGroup(),
@@ -447,16 +439,10 @@ class GameScene extends Phaser.Scene {
   handleObstacleCollision(player, obstacle) {
     if (!this.gameState.isGameActive()) return;
 
-    // Si hay dash activo, no morir: destruir/limpiar el obstáculo y salir
-    if (this.gameState.isDashActive && this.gameState.isDashActive()) {
-      const ref = obstacle?.getData?.("ref");
-      if (ref) {
-        this.obstacleManager.removeObstacle(ref);
-      } else {
-        // fallback: ocultar sprite
-        if (obstacle?.setActive) obstacle.setActive(false);
-        if (obstacle?.setVisible) obstacle.setVisible(false);
-      }
+    // Solo morir si el jugador está tocando el suelo (no en el aire)
+    const playerBody = player.body;
+    if (!playerBody.touching.down && !playerBody.blocked.down) {
+      // Está en el aire (saltando), no hacer nada
       return;
     }
 

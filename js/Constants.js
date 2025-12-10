@@ -54,7 +54,7 @@ const PLAYER_CONFIG = {
   JUMP_VELOCITY: -350,
   CUT_JUMP_VELOCITY: -150,
   DISPLAY_SIZE: { width: 80, height: 80 },
-  HITBOX: { width: 60, height: 70, offsetX: 10, offsetY: 10 },
+  HITBOX: { width: 50, height: 60, offsetX: 15, offsetY: 15 },
   ORIGIN: { x: 0.5, y: 1 },
 };
 
@@ -64,29 +64,29 @@ const OBSTACLE_CONFIG = {
     texture: "obstacle_crate",
     originY: 1,
     display: { width: 25, height: 25 },
-    hitbox: { width: 18, height: 18, offsetX: 3.5, offsetY: 3.5 },
-    minGap: 200,
+    hitbox: { width: 16, height: 16, offsetX: 4.5, offsetY: 4.5 },
+    minGap: 220,
   },
   hammer: {
     texture: "obstacle_hammer",
     originY: 1,
     display: { width: 30, height: 40 },
-    hitbox: { width: 22, height: 34, offsetX: 4, offsetY: 3 },
-    minGap: 190,
+    hitbox: { width: 20, height: 32, offsetX: 5, offsetY: 4 },
+    minGap: 210,
   },
   tank: {
     texture: "obstacle_tank",
     originY: 1,
     display: { width: 35, height: 45 },
-    hitbox: { width: 26, height: 38, offsetX: 4.5, offsetY: 3.5 },
-    minGap: 220,
+    hitbox: { width: 24, height: 36, offsetX: 5.5, offsetY: 4.5 },
+    minGap: 240,
   },
   gear: {
     texture: "obstacle_gear",
     originY: 1,
     display: { width: 30, height: 30 },
-    hitbox: { width: 20, height: 20, offsetX: 5, offsetY: 5 },
-    minGap: 210,
+    hitbox: { width: 18, height: 18, offsetX: 6, offsetY: 6 },
+    minGap: 230,
     rotating: true,
     rotSpeed: 120,
   },
@@ -108,7 +108,7 @@ const OBSTACLE_CONFIG = {
 // Configuración del ObstacleManager
 const OBSTACLE_MANAGER_CONFIG = {
   // Ventana de spawn más rápida para mejor ritmo
-  SPAWN_WINDOW: { min: 650, max: 1200 },
+  SPAWN_WINDOW: { min: 750, max: 1350 },
   TYPES: [
     "crate",
     "hammer",
