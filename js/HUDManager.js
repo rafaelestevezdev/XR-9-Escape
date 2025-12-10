@@ -105,25 +105,6 @@ class HUDManager {
       this.updateSpeed(speedRounded);
       this._lastSpeedRounded = speedRounded;
     }
-
-    // Power-up activo
-    const activeLabel = gameState.getActivePowerupLabel();
-    if (activeLabel) {
-      const secs = gameState.getDashRemainingSeconds();
-      const rounded = Math.max(0, Math.ceil(secs * 10) / 10); // 1 decimal hacia arriba
-      if (
-        activeLabel !== this._lastPowerupLabel ||
-        rounded !== this._lastPowerupSecs
-      ) {
-        this.showPowerupIndicator(`${activeLabel} ${rounded.toFixed(1)}s`);
-        this._lastPowerupLabel = activeLabel;
-        this._lastPowerupSecs = rounded;
-      }
-    } else if (this._lastPowerupLabel) {
-      this.hidePowerupIndicator();
-      this._lastPowerupLabel = null;
-      this._lastPowerupSecs = null;
-    }
   }
 
   /**

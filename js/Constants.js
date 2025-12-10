@@ -83,7 +83,7 @@ const OBSTACLE_CONFIG = {
   },
   gear: {
     texture: "obstacle_gear",
-    originY: 0.5,
+    originY: 1,
     display: { width: 30, height: 30 },
     hitbox: { width: 20, height: 20, offsetX: 5, offsetY: 5 },
     minGap: 210,
@@ -102,18 +102,7 @@ const OBSTACLE_CONFIG = {
     bobSpeed: 3.5,
     isBattery: true,
   },
-  dash: {
-    texture: "collectible_dash",
-    originY: 1,
-    display: { width: 22, height: 22 },
-    hitbox: { width: 16, height: 16, offsetX: 3, offsetY: 3 },
-    minGap: 220,
-    collectible: true,
-    yOffset: -72,
-    bobAmplitude: 10,
-    bobSpeed: 4.0,
-    isDash: true,
-  },
+  // dash: eliminado por causar freezes al recoger
 };
 
 // Configuración del ObstacleManager
@@ -128,7 +117,8 @@ const OBSTACLE_MANAGER_CONFIG = {
     "battery",
     "battery",
     "battery",
-    "dash", // baja frecuencia
+    "battery",
+    "battery",
   ],
   INITIAL_DIFFICULTY: 1,
   SPAWN_WINDOW_DECREMENT: 60,
@@ -269,7 +259,7 @@ const POWERUPS = {
     KEY: "dash",
     TEXTURE: TEXTURE_KEYS.DASH,
     DURATION_MS: 2000,
-    SPEED_BOOST: 220, // incremento temporal de velocidad del mundo
+    SPEED_BOOST: 140, // incremento temporal de velocidad del mundo (suavizado para evitar choques)
     HUD_LABEL: "DASH",
   },
 };

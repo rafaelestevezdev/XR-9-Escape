@@ -23,6 +23,9 @@ class GameScene extends Phaser.Scene {
     this.player = null;
     this.obstacleManager = null;
     this.laserDroneManager = null;
+    this.perfText = null;
+    this.perfEnabled = false;
+    this.perfLastUpdate = 0;
     if (CONSTANTS.DEBUG) console.log("✅ All managers initialized");
   }
 
@@ -148,6 +151,9 @@ class GameScene extends Phaser.Scene {
 
     // Configurar eventos de input
     this.setupInputEvents();
+
+    // Crear overlay de rendimiento (se activa con F3)
+    this.createPerfOverlay();
 
     // Mostrar pantalla de inicio
     this.hudManager.showStartScreen();
@@ -279,6 +285,15 @@ class GameScene extends Phaser.Scene {
     // Evento para reiniciar
     this.inputManager.onRestart(() => {
       this.restartGame();
+    });
+
+    // Toggle overlay de rendimiento con F3
+    const perfKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.F3
+    );
+    perfKey.on("down", () => {
+      this.perfEnabled = !this.perfEnabled;
+      if (this.perfText) this.perfText.setVisible(this.perfEnabled);
     });
   }
 
@@ -430,22 +445,35 @@ class GameScene extends Phaser.Scene {
   }
 
   handleObstacleCollision(player, obstacle) {
-    if (this.gameState.isGameActive()) {
-      // Pequeño punch visual al golpear
-      const cam = this.cameras.main;
-      if (cam) {
-        cam.shake(140, 0.012);
-        cam.flash(140, 255, 96, 96, false);
+    if (!this.gameState.isGameActive()) return;
+
+    // Si hay dash activo, no morir: destruir/limpiar el obstáculo y salir
+    if (this.gameState.isDashActive && this.gameState.isDashActive()) {
+      const ref = obstacle?.getData?.("ref");
+      if (ref) {
+        this.obstacleManager.removeObstacle(ref);
+      } else {
+        // fallback: ocultar sprite
+        if (obstacle?.setActive) obstacle.setActive(false);
+        if (obstacle?.setVisible) obstacle.setVisible(false);
       }
-      const spr = this.player?.getSprite?.();
-      if (spr) {
-        spr.setTint(0xff6666);
-        this.time.delayedCall(160, () => {
-          if (spr && spr.clearTint) spr.clearTint();
-        });
-      }
-      this.endGame();
+      return;
     }
+
+    // Pequeño punch visual al golpear
+    const cam = this.cameras.main;
+    if (cam) {
+      cam.shake(140, 0.012);
+      cam.flash(140, 255, 96, 96, false);
+    }
+    const spr = this.player?.getSprite?.();
+    if (spr) {
+      spr.setTint(0xff6666);
+      this.time.delayedCall(160, () => {
+        if (spr && spr.clearTint) spr.clearTint();
+      });
+    }
+    this.endGame();
   }
 
   handleCollectibleOverlap(player, itemSprite) {
@@ -497,19 +525,6 @@ class GameScene extends Phaser.Scene {
     if (type === "battery") {
       this.gameState.addBattery();
       this.hudManager.updateBatteryCount(this.gameState.getBatteryCount());
-      this.playPickupSfx();
-    } else if (type === CONSTANTS.POWERUPS.DASH.KEY) {
-      // Activar dash temporal
-      this.gameState.activateDash(
-        CONSTANTS.POWERUPS.DASH.DURATION_MS,
-        CONSTANTS.POWERUPS.DASH.SPEED_BOOST
-      );
-      // Feedback ligero opcional: tintar al jugador
-      const spr = this.player.getSprite();
-      spr.setTint(0x8bc4ff);
-      this.time.delayedCall(CONSTANTS.POWERUPS.DASH.DURATION_MS, () => {
-        if (spr && spr.clearTint) spr.clearTint();
-      });
       this.playPickupSfx();
     }
   }
@@ -578,9 +593,6 @@ class GameScene extends Phaser.Scene {
         );
       }
 
-      // Actualizar power-ups temporales
-      this.gameState.tickDash(delta);
-
       // Actualizar estado del juego
       this.gameState.incrementScore(deltaSeconds);
       this.gameState.updateEnergy(deltaSeconds);
@@ -598,6 +610,37 @@ class GameScene extends Phaser.Scene {
         this.gameState.updateLastDifficultyIncrease(time);
       }
     }
+
+    // Overlay de rendimiento: refrescar cada ~200ms para bajo costo
+    if (this.perfEnabled && this.perfText) {
+      if (time - this.perfLastUpdate > 200) {
+        const fps = Math.round(this.game.loop.actualFps || 0);
+        const obs = this.obstacleManager?.obstacles?.length || 0;
+        const pool = this.obstacleManager?.pool?.length || 0;
+        const lasers = this.laserDroneManager?.getLaserGroup?.()
+          ? this.laserDroneManager.getLaserGroup().getChildren().length
+          : 0;
+        const tweens = this.tweens?.getAllTweens()?.length || 0;
+        this.perfText.setText(
+          `FPS: ${fps}\nObs: ${obs} (pool ${pool})\nLasers: ${lasers}\nTweens: ${tweens}`
+        );
+        this.perfLastUpdate = time;
+      }
+    }
+  }
+
+  createPerfOverlay() {
+    const style = {
+      fontFamily: "monospace",
+      fontSize: "12px",
+      color: "#7cf0ff",
+      align: "left",
+      backgroundColor: "rgba(0,0,0,0.35)",
+      padding: { x: 6, y: 4 },
+    };
+    this.perfText = this.add.text(10, 10, "", style).setScrollFactor(0);
+    this.perfText.setDepth(99);
+    this.perfText.setVisible(false);
   }
 
   destroy() {

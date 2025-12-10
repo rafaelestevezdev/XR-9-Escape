@@ -277,7 +277,7 @@ class TextureGenerator {
    */
   generateCollectibleTextures() {
     this.generateBatteryTexture();
-    this.generateDashTexture();
+    // dash: eliminado
   }
 
   /**
@@ -328,25 +328,25 @@ class TextureGenerator {
     const W = 28,
       H = 28;
 
-    // Fondo circular tenue para halo
-    g.fillStyle(CONSTANTS.COLORS.LIGHT_GLOW_OUTER, 0.25);
-    g.fillCircle(W / 2, H / 2, 12);
-    g.fillStyle(CONSTANTS.COLORS.LIGHT_GLOW_INNER, 0.35);
-    g.fillCircle(W / 2, H / 2, 9);
+    // Halo más grande y brillante
+    g.fillStyle(CONSTANTS.COLORS.LIGHT_GLOW_OUTER, 0.35);
+    g.fillCircle(W / 2, H / 2, 14);
+    g.fillStyle(CONSTANTS.COLORS.LIGHT_GLOW_INNER, 0.55);
+    g.fillCircle(W / 2, H / 2, 11);
 
-    // Rayo estilizado
-    g.fillStyle(CONSTANTS.COLORS.LIGHT_CYAN, 1);
+    // Rayo estilizado (más contraste)
+    g.fillStyle(CONSTANTS.COLORS.HAZARD_YELLOW, 1);
     g.beginPath();
-    g.moveTo(14, 3);
-    g.lineTo(9, 14);
-    g.lineTo(14, 14);
-    g.lineTo(12, 25);
-    g.lineTo(19, 12);
-    g.lineTo(14, 12);
+    g.moveTo(14, 2);
+    g.lineTo(8, 14);
+    g.lineTo(13, 14);
+    g.lineTo(11, 26);
+    g.lineTo(20, 12);
+    g.lineTo(15, 12);
     g.closePath();
     g.fillPath();
 
-    // Borde/acento
+    // Borde/acento azul
     g.lineStyle(2, CONSTANTS.COLORS.LIGHT_CYAN_SOFT, 1);
     g.strokePath();
 
